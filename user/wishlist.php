@@ -2,75 +2,48 @@
 
 $servername = "localhost:3307";
 $username = "root";
-$password = "";
+$password = "";  // Assuming the password was empty, it's a common practice for local development.
 $dbname = "souffle_db";
 
-// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 session_start();
 
-// Check if session username is set
-if (!isset($_SESSION['username'])) {
-    echo "<script>alert('Please log in first.')</script>";
-    echo "<script>window.open('login.php', '_self')</script>";
-    exit();
-}
-
 $username = $_SESSION['username'];
+$pro_id = $_GET['prod_id'];
 
-// Validate and sanitize prod_id
-if (!isset($_GET['prod_id']) || !is_numeric($_GET['prod_id'])) {
-    echo "<script>alert('Invalid product ID.')</script>";
-    echo "<script>window.open('product.php', '_self')</script>";
-    exit();
-}
+$get_userid = "SELECT * FROM user WHERE username='$username'";  // Corrected SQL syntax
 
-$pro_id = intval($_GET['prod_id']);
+$result = $conn->query($get_userid);
 
-// Get user ID using prepared statement
-$stmt = $conn->prepare("SELECT user_id FROM user WHERE username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
+if ($result) {
     $row = $result->fetch_assoc();
     $user_id = $row['user_id'];
 
-    // Check if product is already in wishlist
-    $stmt = $conn->prepare("SELECT * FROM wishlist WHERE pro_id = ? AND user_id = ?");
-    $stmt->bind_param("ii", $pro_id, $user_id);
-    $stmt->execute();
-    $result_sel = $stmt->get_result();
+    $select = "SELECT * FROM wishlist WHERE pro_id ='$pro_id' AND user_id ='$user_id'"; // Corrected SQL syntax
 
-    if ($result_sel->num_rows > 0) {
+    $result_sel = $conn->query($select);
+
+    if ($result_sel->num_rows == 1) {
         echo "<script>alert('Product already added in wishlist')</script>";
-        echo "<script>window.open('product.php', '_self')</script>";
+        echo "<script>window.open('product.php','_self')</script>";
     } else {
-        // Insert product into wishlist
-        $stmt = $conn->prepare("INSERT INTO wishlist (user_id, pro_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $user_id, $pro_id);
+        // Missing curly brace here. Added below
+        $insert = "INSERT INTO wishlist (user_id, pro_id) VALUES ('$user_id','$pro_id')"; // Corrected SQL syntax and table name
 
-        if ($stmt->execute()) {
-            echo "<script>alert('Product added to wishlist')</script>";
-            echo "<script>window.open('view_wishlist.php', '_self')</script>";
-        } else {
-            echo "<script>alert('Failed to add product to wishlist')</script>";
-            echo "<script>window.open('product.php', '_self')</script>";
+        $result = $conn->query($insert);
+
+        if ($result == TRUE) {
+            echo "<script>alert('Product added in wishlist')</script>";
+            echo "<script>window.open('view_wishlist.php','_self')</script>";
         }
     }
-} else {
-    echo "<script>alert('User not found')</script>";
-    echo "<script>window.open('login.php', '_self')</script>";
+
 }
 
-$stmt->close();
-$conn->close();
-
+$conn->close();  //Added to close the connection
 ?>

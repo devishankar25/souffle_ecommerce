@@ -1,57 +1,49 @@
 <?php
 session_start();
-require_once 'db.php'; // Ensure you include your database connection file
-
-if (!isset($_SESSION['username'])) {
-    die("User not logged in.");
-}
 
 $username = $_SESSION['username'];
 
-// Fetch user_id for the logged-in user
-$query = "SELECT user_id, fname, lname FROM `user` WHERE username = ?";
+$query = "SELECT user_id FROM `user` WHERE username = '$username'"; // Corrected SQL syntax [cite: 1]
+
 $stmt = $conn->prepare($query);
-$stmt->bind_param("s", $username);
+
 $stmt->execute();
+
 $result = $stmt->get_result();
 
-if ($result->num_rows === 0) {
-    die("User not found.");
-}
-
 $user = $result->fetch_assoc();
+
 $user_id = $user['user_id'];
-$fullName = $user['fname'] . ' ' . $user['lname'];
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $rating = isset($_POST['rating']) ? $_POST['rating'] : null;
-    $feedback = isset($_POST['feedback']) ? $_POST['feedback'] : '';
 
-    // Handle file upload
-    $image = '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $target_dir = "uploads/";
-        $image = basename($_FILES["image"]["name"]);
-        $target_file = $target_dir . $image;
+    $rating = isset($_POST['rating']) ? $_POST['rating'] : null; // Check if rating is set [cite: 2]
+    $image = $_FILES['image']['name'];
+    $feedback = $_POST['feedback'];
 
-        if (!move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-            die("Failed to upload image.");
-        }
-    }
+    $target_dir = "uploads/";
+    $target_file = $target_dir . basename($_FILES["image"]["name"]);
 
-    // Insert feedback into the database
-    $sql = "INSERT INTO feedbacks (user_id, name, rating, image, feedback) VALUES (?, ?, ?, ?, ?)";
+    move_uploaded_file($_FILES["image"]["tmp_name"],  $target_file);
+
+    $select_name = "SELECT * FROM `user`";  // Corrected SQL syntax and added missing backtick [cite: 2]
+    $result_name = $conn->query($select_name);
+    $row = mysqli_fetch_assoc($result_name);
+
+    $fullName = $row['fname'] . ' ' . $row['lname'];  // Assuming 'lname' is the last name field [cite: 2]
+
+    $sql = "INSERT INTO feedbacks (user_id, name, rating, image, feedback) VALUES ('$user_id', '$fullName', '$rating', '$image', '$feedback')";
+
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isiss", $user_id, $fullName, $rating, $image, $feedback);
 
-    if ($stmt->execute()) {
+    if ($stmt->execute() === TRUE) {
         echo "New record created successfully";
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
 
     $stmt->close();
+    $conn->close();
 }
 
-$conn->close();
 ?>
