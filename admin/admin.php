@@ -41,7 +41,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifeStyle Zone</title>
+    <title>Souffle</title>
 
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
@@ -148,7 +148,7 @@ $conn->close();
                         <input type="submit" value="Login Now" name="login" class="btn">
                     </div>
                     <div class="admin_no text-danger bg-light">
-                        <a href="main_page.php" class="admin text-danger">I am a User</a>
+                        <a href="user/main_page.php" class="admin text-danger">I am a User</a>
                     </div>
                 </form>
             </div>

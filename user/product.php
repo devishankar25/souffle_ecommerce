@@ -4,7 +4,8 @@ session_start();
 
 $username = $_SESSION['username'];  // Corrected `$_SESSION`
 
-include('./functions.php/functions.php');
+include('../includes/functions.php');
+
 
 if (isset($_POST['add_to_wishlist'])) {
 
@@ -30,7 +31,7 @@ if (isset($_POST['add_to_wishlist'])) {
 
             <li><a href="profile.php"><i class="far fa-user"></i></a></li>
 
-            <li><a href="index.php">Home</a></li>
+            <li><a href="../index.php">Home</a></li>
 
             <li><a class="active" href="product.php">Product</a></li>
 

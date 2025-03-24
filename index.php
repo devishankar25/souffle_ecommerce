@@ -2,7 +2,7 @@
 
 session_start();
 
-include('/functions.php/functions.php');  // Added semicolon
+include('includes/functions.php');  // Added semicolon
 ?>
 
 <html>
@@ -14,21 +14,21 @@ include('/functions.php/functions.php');  // Added semicolon
     <a href=""><img src="logo.png" alt=""></a>  <div>
         <ul id="navbar">
 
-            <li><a href="profile.php"><i class="far fa-user"></i></a></li>
+            <li><a href="user/profile.php"><i class="far fa-user"></i></a></li>
 
             <li><a class="active" href="index.php">Home</a></li>
 
-            <li><a href="product.php">Product</a></li>
+            <li><a href="user/product.php">Product</a></li>
 
-            <li><a href="viewplan.php">Plans</a></li>
+            <li><a href="user/viewplan.php">Plans</a></li>
 
-            <li><a href="viewsession.php">Sessions</a></li>
+            <li><a href="user/viewsession.php">Sessions</a></li>
 
-            <li><a href="viewfeedback.php">Reviews</a></li>
+            <li><a href="user/viewfeedback.php">Reviews</a></li>
 
-            <li><a href="contact.php">Contact</a></li>
+            <li><a href="user/contact.php">Contact</a></li>
 
-            <li id="lg-bag"><a href="cart.php"><i class="fa-solid fa-cart-plus"></i>
+            <li id="lg-bag"><a href="user/cart.php"><i class="fa-solid fa-cart-plus"></i>
                     <sup><?php cart_item(); ?></sup></a></li>
 
             <li><a href="#">Total: <?php total(); ?> /-</a></li>
@@ -42,10 +42,10 @@ include('/functions.php/functions.php');  // Added semicolon
 
     <div id="mobile">
 
-        <a href="profile.php"><i class="far fa-user"></i></a>
+        <a href="user/profile.php"><i class="far fa-user"></i></a>
 
 
-        <a href="cart.php"><i class="far fa-cart-plus"></i></a>
+        <a href="user/cart.php"><i class="far fa-cart-plus"></i></a>
 
         <i id="bar" class="fa fa-outdent"></i>
 
@@ -94,7 +94,7 @@ cart();
             if (!isset($_SESSION['username'])) {  // Corrected `$_SESSION`
 
                 echo "<li class='nav-item'>
-                    <a href='user.php' class='nav-link'>Login</a>
+                    <a href='user/user.php' class='nav-link'>Login</a>
                 </li>";
             } else {
 

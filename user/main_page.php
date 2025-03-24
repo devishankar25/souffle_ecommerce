@@ -83,7 +83,7 @@
         </div>
     </nav>
     <div class="container shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-        <a href="admin.php">
+        <a href="../admin/admin.php">
             <button type="button" class="btn btn-success btn-lg">ADMIN</button>
         </a>
         <a href="user.php">

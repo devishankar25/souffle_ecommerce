@@ -73,22 +73,23 @@ function cart() {
         }
     }
 }
-
-// Add a product to the wishlist
-function add_to_wishlist($conn, $username, $product_id) {
-    $username = $conn->real_escape_string($username);
-    $product_id = $conn->real_escape_string($product_id);
+function add_to_wishlist($username, $product_id) {
+    global $conn; // Ensure you have a database connection
 
     // Check if the product is already in the wishlist
-    $check_query = "SELECT * FROM wishlist WHERE username = '$username' AND product_id = '$product_id'";
-    $check_result = $conn->query($check_query);
+    $query = "SELECT * FROM wishlist WHERE username = '$username' AND product_id = '$product_id'";
+    $result = $conn->query($query);
 
-    if ($check_result && $check_result->num_rows > 0) {
-        return false; // Product is already in the wishlist
+    if ($result->num_rows > 0) {
+        return false; // Product already in wishlist
     }
 
     // Add the product to the wishlist
     $insert_query = "INSERT INTO wishlist (username, product_id) VALUES ('$username', '$product_id')";
-    return $conn->query($insert_query);
+    if ($conn->query($insert_query)) {
+        return true; // Successfully added
+    } else {
+        return false; // Failed to add
+    }
 }
 ?>

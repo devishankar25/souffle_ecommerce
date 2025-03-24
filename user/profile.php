@@ -36,7 +36,7 @@ if (isset($_SESSION['username'])) {
     <div>
         <ul id="navbar">
             <li><a class="active" href="profile.php"><i class="fa fa-user"></i></a></li>
-            <li><a href="index.php">Home</a></li>
+            <li><a href="../index.php">Home</a></li>
             <li><a href="product.php">Product</a></li>
             <li><a href="viewplan.php">Plans</a></li>
             <li><a href="viewsession.php">Sessions</a></li>
