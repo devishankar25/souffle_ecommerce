@@ -1,7 +1,5 @@
 <?php
 
-session_start();  // Add missing session start
-
 $username = $_SESSION['username'];
 
 if (isset($_POST['update_profile'])) {
@@ -9,24 +7,24 @@ if (isset($_POST['update_profile'])) {
     //  Update first name, last name, gender, age, height, weight
 
     $update_fname = isset($_POST['update_fname']) ?
-        mysqli_real_escape_string($conn, $_POST['update_fname']) : ""; [cite: 2]
+        mysqli_real_escape_string($conn, $_POST['update_fname']) : ";
 
     $update_lname = isset($_POST['update_lname']) ?
-        mysqli_real_escape_string($conn, $_POST['update_lname']) : ""; [cite: 2]
+        mysqli_real_escape_string($conn, $_POST['update_lname']) : ";
 
     $update_gender = isset($_POST['update_gender']) ?
-        mysqli_real_escape_string($conn, $_POST['update_gender']) : ""; [cite: 2]
+        mysqli_real_escape_string($conn, $_POST['update_gender']) : ";
 
     $update_age = isset($_POST['update_age']) ?
-        mysqli_real_escape_string($conn, $_POST['update_age']) : ""; [cite: 2]
+        mysqli_real_escape_string($conn, $_POST['update_age']) : ";
 
     $update_height = isset($_POST['update_height']) ?
-        mysqli_real_escape_string($conn, $_POST['update_height']) : ""; [cite: 2]
+        mysqli_real_escape_string($conn, $_POST['update_height']) : ";
 
     $update_weight = isset($_POST['update_weight']) ?
-        mysqli_real_escape_string($conn, $_POST['update_weight']) : ""; [cite: 2]
+        mysqli_real_escape_string($conn, $_POST['update_weight']) : ";
 
-    $update_query = "UPDATE `user` SET fname = '$update_fname', lname = '$update_lname', gender = '$update_gender', age = '$update_age', height = '$update_height', weight = '$update_weight' WHERE username = '$username'"; [cite: 2]
+    $update_query = "UPDATE `user` SET fname = '$update_fname', lname = '$update_lname', gender = '$update_gender', age = '$update_age', height = '$update_height', weight = '$update_weight' WHERE username = '$username'";
 
     $result_update = mysqli_query($conn, $update_query);
 
