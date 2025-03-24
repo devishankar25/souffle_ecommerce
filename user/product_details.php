@@ -54,9 +54,7 @@ while($row = $result->fetch_assoc()) {
 
 echo "<div class='pro'>";
 
-echo "<img src='" . $row["pro_image"].'" alt='" $row["pro_name"] . '">";
-
-"">"; [cite: 3, 4, 5]
+echo "<img src='" . $row["pro_image"] . "' alt='" . $row["pro_name"] . "'>";
 
 echo "<div class='des'>";
 
@@ -82,29 +80,25 @@ echo "</div>";
 
 echo "<h4>Rs.".$row["pro_price"]."/-</h4>";
 
-echo "<form method="post" action='add_to_cart.php'>";
+echo "<form method='post' action='add_to_cart.php'>";
 
-echo "<input type='hidden' name='pro_id' value= " . $row["pro_id"] . " >";
-Input field
+echo "<input type='hidden' name='pro_id' value='" . $row["pro_id"] . "'>";
+echo "<input type='hidden' name='price' value='" . $row["pro_price"] . "'>"; // Add price Input field
 
-echo "<input type='hidden' name='price' value=".$row["pro_price"]  ."">"; // Add price
+echo "<a href='product.php?add_to_cart=".$row["pro_id"]."' class='btn'>Add to Cart</a>
+<style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
+left: 10px;}a.btn:hover{background-color:seagreen; color:azure; font-weight:600;}</style>";
 
-echo "<a href='product.php?add_to_cart=".$row["pro_id"]."' class='btn'>
-Add to
-Cart</a><style>a.btn background-color:darkseagreen; color:black; font-weight:600;
-margin-
-left: 10px;}a.btn:hover{background-color:seagreen color azure; font-weight:600;}</style>
-
-echo "<a href='product_details.php?pro_id=".$row["pro_id"]." class='btn'>View
-More</a><style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
-left 10px  hover background-color
-
-}} else {
+echo "<a href='product_details.php?pro_id=".$row["pro_id"]."' class='btn'>View More</a>
+<style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
+left: 10px;}a.btn:hover{background-color:seagreen; color:azure; font-weight:600;}</style>";
 
 echo "</form>";
 
 echo "</div>";
-echo "</div>"; [cite: 5, 6, 7, 8]
+
+echo "</div>";
+}}else {
 
 echo "<h4 class='m-2 text-danger'>No Products found</h4>";}}
 
@@ -122,7 +116,7 @@ if ($result->num_rows > 0) {
 while($row = $result->fetch_assoc()) {
 
 echo "<div class='pro'>";
-echo "<img src="" $row["pro_image"] "" alt="" $row["pro_name"] . """>"; [cite: 8, 9, 10]
+echo "<img src='" .$row["pro_image"].'"alt="' .$row["pro_name"] . '">'; 
 
 echo "<div class='des'>";
 
@@ -138,13 +132,9 @@ echo "<i class='fas fa-star'></i>";
 
 echo "<i class='fas fa-star'></i>";
 
-echo "<i class='fas fa-star'></i>"
-
-;
-
 echo "<i class='fas fa-star'></i>";
 
-input field
+echo "<i class='fas fa-star'></i>";
 
 echo "</div>";
 
@@ -152,22 +142,25 @@ echo "<h4>Rs.". $row["pro_price"]."/-</h4>";
 
 echo "<form method='post' action='add_to_cart.php'>";
 
-echo "<input type='hidden' name='pro_id' value=  .
-$row["pro_id"] . "">";
+echo "<input type='hidden' name='pro_id' value='".$row["pro_id"]. "'>"; // Add product id
 
-echo "<input type='hidden' name='price' value="", $row["pro_price"] . "">"; // Add price
-Cart</a><style>a.btn{background-color:darkseagreen color:black; font-weight:600 margin-
-echo "<a href='product.php?add_to_cart=".$row["pro_id"]."" class='btn'>Add to
-left: 10px; a.btn:hover{background-color:seagreen;color azure font-weight:600;}</style>";
+echo "<input type='hidden' name='price' value='", $row["pro_price"] ."'>"; // Add price input
+
+echo "<a href='product.php?add_to_cart=".$row["pro_id"]."' class='btn'>Add to Cart</a>
+<style>a.btn{background-color:darkseagreen; color:black; font-weight:600 margin-
+left: 10px;}a.btn:hover{background-color:seagreen;color: azure; font-weight:600;}</style>";
+
+echo "<a href='product_details.php?pro id=".$row["pro_id"]." class='btn'>View
 More</a><style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
 left: 10px; a.btn.hover{background-color:seagreen;color azure;font-weight:600;}</style>";
-echo "<a href='product_details.php?pro id=".$row["pro_id"]." class='btn'>View
-
-else {
 
 echo "</form>";
 
 echo "</div>";}}
+
+else {
+
+
 
 echo "<h4 class='m-2 text-danger'>No Products found</h4>";}}
 
@@ -175,20 +168,17 @@ if(isset($_GET['search_data_product'])) {
 
 $search_value = $_GET['search_data'];
 
-$sql = "SELECT * FROM products WHERE pro_keyword LIKE '%$search_value":
+$sql = "SELECT * FROM products WHERE pro_keyword LIKE '%$search_value%'";
 
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
 
-while($row = $result->fetch_assoc())
-
-input field
+while($row = $result->fetch_assoc()) {
 
 echo "<div class='pro'>";
 
-echo "<img src="" .
-$row["pro_image"]   " alt="" $row["pro_name"] . "">";
+echo "<img src='" .$row["pro_image"]. "'alt='".$row["pro_name"]. "'>";
 
 echo "<div class='des'>";
 
@@ -209,24 +199,21 @@ echo "<i class='fas fa-star'></i>";
 echo "</div>";
 
 echo "<h4>Rs. ".$row["pro_price"]."/-</h4>";
-echo "<
+echo "<form method='post' action='add_to_cart.php'>";
+echo "<input type='hidden' name='pro_id' value='"  .$row["pro_id"]. "'>"; // Add product id
+echo "<input type='hidden' name='price' value='" .$row["pro_price"]. "'>"; // Add price
 
-form
+echo "<a href='product.php?add_to_cart=".$row["pro_id"]."' class='btn'>Add to Cart</a>
+<style>a.btn{background-color:darkseagreen; color:black; font-weight:600 margin-
+left: 10px;}a.btn:hover{background-color:seagreen;color: azure; font-weight:600;}</style>";
 
-method="post" action='add_to_cart.php'>";
-echo "<input type='hidden' name='pro_id' value="  $row["pro_id"]
-echo "<input type='hidden' name='price' value="" $row["pro_price"]. ">" // Add price
-
-Cart</a><style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
-echo "<a href='product.php?add_to_cart=".$row["pro_id"]."" class='btn'>Add to
-left:10px; a.btn:hover{background-color:seagreen color:azure font-weight: 600;}</style>"
+echo "<a href='product_details.php?pro id=".$row["pro_id"]."' class='btn'>View
 More</a><style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
-echo "<a href=product_details.php?pro_id=".$row["pro_id"]." class="btn'>View
-left: 10px; a.btn:hover{background-color: seagreen color azure font-weight:600;}</style>",
+left: 10px; a.btn.hover{background-color:seagreen;color azure;font-weight:600;}</style>";
 
 echo "</form>";
 
-echo "</div>"
+echo "</div>";
 
 }
 
@@ -256,7 +243,7 @@ echo "<div class='col-md-12 mt-3'>";
 
 echo "<h4 class='m-2 text-danger'>Related Products</h4>";
 
-echo "</div>"
+echo "</div>";
 
 echo "<div class='col-md-3'>";
 
@@ -269,18 +256,15 @@ echo "</div>";
 
 echo "<div class='col-md-3'>";
 
-echo "<br><br><img src='./product_images/".$row['pro_image3']."" class='w-
-
+echo "<br><br><img src='./product_images/".$row['pro_image3']."' class='w-
 auto'><style>img{width:50%;height:50%;}</style>";
 
+echo "</div>";}}
 else {
 
+echo "<h4 class='m-2 text-danger'>No Related Products found</h4>";}}
+
 ?>
-
-echo "</div>";}}
-
-echo "<h4 class='m-2 text-danger'>No Related Products found</h4>"  )
-
 <div class="col-md-3 bg-secondary p-0 position:fixed m-5">
 
 <ul class="navbar-nav me-auto text-center">
@@ -312,8 +296,6 @@ light'>".$row['brand_title']."</a>
 
 ?>
 
-Lifestyle Zon
-
 </ul>
 
 <ul class="navbar-nav me-auto text-center">
@@ -339,7 +321,7 @@ $category_id = $row['category_id'];
 
 echo "<li class='nav-item '>
 
-<a href='product.php?category=$category_id' class="nav-link text-
+<a href='product.php?category=$category_id' class='nav-link text-
 
 light'>".$row['category_title']."</a>
 
