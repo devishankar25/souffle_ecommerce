@@ -1,87 +1,97 @@
 <?php
-
 session_start();
-
 include('../includes/functions.php');
+$username = $_SESSION['username'] ?? null;
 
-$username = $_SESSION['username'];
-
-if (isset($_POST['add_to_wishlist'])) {
+if (isset($_POST['add_to_cart'])) {
     $product_id = $_POST['pro_id'];
+    $ip_address = getClientIP();
 
-    if (add_to_wishlist($conn, $username, $product_id)) {
-        echo "<script>alert('Product added to wishlist');</script>";
+    $query = $conn->prepare("SELECT * FROM cart WHERE pro_id = ? AND ip_address = ?");
+    $query->bind_param("is", $product_id, $ip_address);
+    $query->execute();
+    $result = $query->get_result();
+
+    if ($result->num_rows == 0) {
+        $insert_query = $conn->prepare("INSERT INTO cart (pro_id, ip_address, quantity) VALUES (?, ?, 1)");
+        $insert_query->bind_param("is", $product_id, $ip_address);
+        $insert_query->execute();
+        echo "<script>alert('Product added to cart!');</script>";
     } else {
-        echo "<script>alert('Failed to add product to wishlist');</script>";
+        echo "<script>alert('Product is already in the cart!');</script>";
     }
 }
 ?>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <title>Products</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Souffle</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css"> <!-- Link to the external CSS file -->
+
 </head>
 
 <body>
-    <div class="centered-container">
-        <section id="header" class="bg-light p-3 spaced-element">
-            <div class="container d-flex justify-content-between align-items-center">
-                <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;"></a>
-                <ul id="navbar" class="d-flex align-items-center">
-                    <li><a href="profile.php"><i class="far fa-user"></i></a></li>
-                    <li><a href="../index.php">Home</a></li>
-                    <li><a class="active" href="product.php">Products</a></li>
-                    <li><a href="viewplan.php">Plans</a></li>
-                    <li><a href="viewsession.php">Sessions</a></li>
-                    <li><a href="viewfeedback.php">Reviews</a></li>
-                    <li><a href="contact.php">Contact</a></li>
-                    <li id="lg-bag">
-                        <a href="cart.php"><i class="fa-solid fa-cart-plus"></i>
-                            <sup><?php echo cart_item($conn); ?></sup>
-                        </a>
-                    </li>
-                    <li><a href="view_wishlist.php"><i class="far fa-heart"></i></a></li>
-                    <li><a href="#">Total: <?php echo total($conn); ?> /-</a></li>
-                    <li><a href="logout.php"><i class="fa fa-sign-out"></i></a></li>
-                </ul>
-            </div>
-        </section>
+    <!-- Navbar -->
+    <?php include('../includes/navbar.php'); ?>
 
-        <section id="product1" class="section-p1 mt-4 spaced-element">
-            <div class="container">
-                <h4>Products</h4>
-                <div class="row">
-                    <?php
-                    $sql = "SELECT * FROM products";
-                    $result = $conn->query($sql);
-
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<div class='col-md-4 mb-4'>
-                                    <div class='card'>
-                                        <img src='" . $row['pro_image'] . "' class='card-img-top' alt='" . htmlspecialchars($row['pro_name']) . "'>
-                                        <div class='card-body'>
-                                            <h5 class='card-title'>" . $row['pro_name'] . "</h5>
-                                            <p class='card-text'>Price: Rs. " . $row['pro_price'] . "/-</p>
-                                            <form method='post'>
-                                                <input type='hidden' name='pro_id' value='" . $row['pro_id'] . "'>
-                                                <button type='submit' name='add_to_wishlist' class='btn btn-primary'>Add to Wishlist</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                  </div>";
-                        }
-                    } else {
-                        echo "<h4 class='text-center text-danger'>No Products Found</h4>";
-                    }
-                    ?>
-                </div>
+    <!-- Search Bar -->
+    <div class="container search-bar">
+        <form method="GET" action="product.php">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search for products..." value="<?php echo $_GET['search'] ?? ''; ?>">
+                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Search</button>
             </div>
-        </section>
+        </form>
     </div>
+
+    <!-- Products Section -->
+    <div class="container py-4">
+        <h4 class="text-center text-primary mb-4">Our Products</h4>
+        <div class="row">
+            <?php
+            $search = $_GET['search'] ?? '';
+            $sql = "SELECT * FROM products WHERE pro_name LIKE ?";
+            $stmt = $conn->prepare($sql);
+            $search_param = "%$search%";
+            $stmt->bind_param("s", $search_param);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo "<div class='col-md-4 col-sm-6 mb-4'>
+                            <div class='card'>
+                                <img src='" . $row['Pro_image'] . "' class='card-img-top' alt='" . htmlspecialchars($row['pro_name']) . "'>
+                                <div class='card-body'>
+                                    <h5 class='card-title'>" . $row['pro_name'] . "</h5>
+                                    <p class='card-text'>" . $row['Pro_des'] . "</p>
+                                    <p class='card-text'>Price: Rs. " . $row['Pro_price'] . "/-</p>
+                                    <form method='post'>
+                                        <input type='hidden' name='pro_id' value='" . $row['Pro_id'] . "'>
+                                        <button type='submit' name='add_to_cart' class='btn btn-primary mb-2'>Add to Cart</button>
+                                    </form>
+                                    <a href='product_details.php?prod_id=" . $row['Pro_id'] . "' class='btn btn-secondary'>View More</a>
+                                </div>
+                            </div>
+                          </div>";
+                }
+            } else {
+                echo "<h4 class='text-center text-danger'>No Products Found</h4>";
+            }
+            ?>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -42,13 +42,19 @@ include('../includes/db.php'); // Include database connection
 
         .dashboard_content_main {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            /* Changed from row to column for better stacking */
+            align-items: center;
+            /* Center align items */
+            gap: 20px;
+            /* Added spacing between elements */
         }
 
         .col70 {
-            width: 70%;
-            margin: 5px auto;
-            /* Adjusted margin */
+            width: 80%;
+            /* Adjusted width for better responsiveness */
+            margin: 0 auto;
+            /* Centered the content */
         }
 
         .dashboard_slidebar .logo {
@@ -217,6 +223,14 @@ include('../includes/db.php'); // Include database connection
             });
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -1,135 +1,73 @@
 <?php
-if (!isset($_SESSION['username'])) { // Corrected condition
-    echo "<li class='nav-item'>
-<a href='#' class='nav-link'>Welcome Guest</a>
-</li>";
-    echo "<li class='nav-item'>
-<a href='user.php' class='nav-link'>Login</a>
-</li>";
-} else {
-    echo "<li class='nav-item'>
-<a href='#' class='nav-link'>Welcome " . $_SESSION['username'] . "</a>
-</li>";
-    echo "<li class='nav-item'>
-<a href='logout.php' class='nav-link'>Logout</a>
-</li>";
-}
+session_start();
+include('../includes/functions.php');
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Profile Page</title>
-    <style>
-        nav.navbar a {
-            color: azure;
-            font-weight: 700;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Souffle Bakery</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css"> <!-- Link to the external CSS file -->
+
 </head>
 
 <body>
-    <div class="centered-container">
-        <section id="header" class="spaced-element">
-            <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;"></a>
-            <div>
-                <ul id="navbar">
-                    <li><a class="active" href="profile.php"><i class="fa fa-user"></i></a></li>
-                    <li><a href="../index.php">Home</a></li>
-                    <li><a href="product.php">Product</a></li>
-                    <li><a href="viewplan.php">Plans</a></li>
-                    <li><a href="viewsession.php">Sessions</a></li>
-                    <li><a href="viewfeedback.php">Reviews</a></li>
-                    <li><a href="contact.php">Contact</a></li>
-                    <li id="lg-bag"><a href="cart.php"><i class="fa-solid fa-cart-plus"></i>
-                            <sup><?php echo cart_item($conn); ?></sup></a></li>
-                    <li><a href="#">Total: <?php echo total($conn); ?> /-</a></li>
-                    <li><a href="login.html"><i class="fa fa-sign-out"></i></a></li>
-                    <a href="#" id="close"><i class="far fa-times"></i></a>
-                </ul>
+    <!-- Header -->
+    <?php include('../includes/navbar.php'); ?>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="profile-sidebar">
+                    <h4>My Profile</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="profile.php?pending"><i class="fas fa-clock"></i> Pending Orders</a></li>
+                        <li><a href="profile.php?edit_profile"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+                        <li><a href="profile.php?my_orders"><i class="fas fa-box"></i> My Orders</a></li>
+                        <li><a href="profile.php?delete_account"><i class="fas fa-user-times"></i> Delete Account</a></li>
+                        <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
             </div>
-            <div id="mobile">
-                <a href="profile.php"><i class="far fa-user"></i></a>
-                <a href="cart.php"><i class="far fa-cart-plus"></i></a>
-                <li><a href="login.html"><i class="fa fa-sign-out"></i></a></li>
-                <i id="bar" class="fa fa-outdent"></i>
-            </div>
-        </section>
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-secondary spaced-element">
-            <ul class="navbar-nav me-auto">
-                <?php
-                if (!isset($_SESSION['username'])) { // Corrected condition
-                    echo "<li class='nav-item'>
-<a href='#' class='nav-link'>Welcome Guest</a>
-</li>";
-                    echo "<li class='nav-item'>
-<a href='user.php' class='nav-link'>Login</a>
-</li>";
-                } else {
-                    echo "<li class='nav-item'>
-<a href='#' class='nav-link'>Welcome " . $_SESSION['username'] . "</a>
-</li>";
-                    echo "<li class='nav-item'>
-<a href='logout.php' class='nav-link'>Logout</a>
-</li>";
-                }
-                ?>
-            </ul>
-        </nav>
-
-        <div class="row m-auto mt-3 spaced-element">
-            <div class="col-md-2">
-                <ul class="navbar-nav bg-secondary text-center" style="height: auto">
-                    <li class="nav-item bg-info">
-                        <a href="#" class="nav-link text-light">
-                            <h4>My Profile</h4>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="profile.php?pending" class="nav-link text-light">
-                            Pending Orders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="profile.php?edit_profile" class="nav-link text-light">Edit Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="profile.php?my_orders" class="nav-link text-light">My Orders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="profile.php?delete_account" class="nav-link text-light">Delete Account</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="logout.php" class="nav-link text-light">Logout</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-10">
-                <?php
-                if (isset($_GET['pending'])) {
-                    include('pending.php');
-                }
-
-                if (isset($_GET['edit_profile'])) {
-                    include('edit_profile.php');
-                }
-
-                if (isset($_GET['my_orders'])) {
-                    include('my_orders.php');
-                }
-
-                if (isset($_GET['delete_account'])) {
-                    include('delete_account.php');
-                }
-
-                if (isset($_GET['my_plans'])) {
-                    include('my_plans.php');
-                }
-                ?>
+            <!-- Content Area -->
+            <div class="col-md-9">
+                <div class="profile-content">
+                    <?php
+                    if (isset($_GET['pending'])) {
+                        include('pending.php');
+                    } elseif (isset($_GET['edit_profile'])) {
+                        include('edit_profile.php');
+                    } elseif (isset($_GET['my_orders'])) {
+                        include('my_orders.php');
+                    } elseif (isset($_GET['delete_account'])) {
+                        include('delete_account.php');
+                    } else {
+                        echo "<h3>Welcome to your profile!</h3>";
+                        echo "<p>Use the menu on the left to navigate through your profile options.</p>";
+                    }
+                    ?>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

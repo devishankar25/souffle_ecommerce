@@ -1,103 +1,86 @@
+<?php
+include('../includes/db.php');
+include('../includes/functions.php');
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Souffle Bakery</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
 <body>
-    <div class="centered-container">
-        <footer class="section-p1 spaced-element">
+    <!-- Navbar -->
+    <?php include('../includes/navbar.php'); ?>
 
-            <div class="col">
-                <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid mb-3" style="max-height: 50px;"></a>
+    <!-- Contact Section -->
+    <div class="container my-5">
+        <footer class="row g-4">
+            <div class="col-md-3 text-center">
+                <a href="../index.php">
+                    <img src="../images/logo.png" alt="Logo" class="img-fluid mb-3" style="max-height: 50px;">
+                </a>
                 <h4><strong>Contact</strong></h4>
-
-                <h4>Address: 1st Floor, Jhanvi Plaza, Vasai(E)</h4>
-
-                <h4>Phone: 7972431956</h4>
-
-                <h4>Open: 5am - 12pm</h4>
-
-                <div class="follow">
-
-                    <h4><strong>Follow Us</strong></h4>
-
-                    <div class="icon">
-
-                        <i class="fab fa-facebook-f"></i>
-
-                        <i class="fab fa-instagram"></i>
-
+                <p>Address: Shop No. 4, Modi Bhavan, Gamdevi, Grant Road (W)</p>
+                <p>Phone: 7410702111</p>
+                <p>Open: 10am - 12pm</p>
+                <div class="follow mt-3">
+                    <h5><strong>Follow Us</strong></h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-dark"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-dark"><i class "fab fa-instagram"></i></a>
                     </div>
-
                 </div>
-
             </div>
-
-            <div class="col">
-
+            <div class="col-md-3 text-center">
                 <h4><strong>About</strong></h4>
-
-                <a href="#">About Us</a>
-
-                <a href="#">Delivery Information</a>
-
-                <a href="#">Terms & Conditions</a>
-
-                <a href="#">Contact Us</a>
-
+                <ul class="list-unstyled mt-3">
+                    <li><a href="#" class="text-dark">About Us</a></li>
+                    <li><a href="#" class="text-dark">Delivery Information</a></li>
+                    <li><a href="#" class="text-dark">Terms & Conditions</a></li>
+                    <li><a href="#" class="text-dark">Contact Us</a></li>
+                </ul>
             </div>
-
-            <div class="col">
-
+            <div class="col-md-3 text-center">
                 <h4><strong>My Account</strong></h4>
-
-                <a href="#">Sign In</a>
-
-                <a href="cart.php">View Cart</a>
-
+                <ul class="list-unstyled mt-3">
+                    <li><a href="#" class="text-dark">Sign In</a></li>
+                    <li><a href="cart.php" class="text-dark">View Cart</a></li>
+                </ul>
             </div>
-
-            <div class="col install">
-
+            <div class="col-md-3 text-center">
                 <h4><strong>Install App</strong></h4>
-
-                <h6>From App Store or Google Play</h6>
-
-                <div class="row m-2">
-
-                    <img src="app.png" alt="" class="m-2">
-
-                    <img src="play.png.png" alt="" class="m-2">
-
-                    <h6 class="d-flex mt-5"><strong>Payment</strong></h6>
-
-                    <img src="card1.png" alt="" class="m-1">
-
-                    <img src="card2.png" alt="" class="m-1">
-
-                    <img src="scan.png" alt="" class="m-1">
-
+                <p class="mt-3">From App Store or Google Play</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <img src="../images/app.png" alt="App Store" class="img-fluid" style="max-height: 40px;">
+                    <img src="../images/play.png" alt="Google Play" class="img-fluid" style="max-height: 40px;">
                 </div>
-
+                <h6 class="mt-4"><strong>Payment</strong></h6>
+                <div class="d-flex justify-content-center gap-3 mt-2">
+                    <img src="../images/card1.png" alt="Card 1" class="img-fluid" style="max-height: 30px;">
+                    <img src="../images/card2.png" alt="Card 2" class="img-fluid" style="max-height: 30px;">
+                    <img src="../images/scan.png" alt="Scan" class="img-fluid" style="max-height: 30px;">
+                </div>
             </div>
-
         </footer>
     </div>
 
-    <center>
-        <div class="p">
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
 
-            <p>All rights reserved &copy; - Designed by LifeStyle Zone</p>
-
-            <style>
-                p p {
-                    background-color: rgb(41, 82, 59);
-
-                    color: azure;
-
-                    padding: 10px;
-                }
-            </style>
-        </div>
-    </center>
-
-    <script src="script.js"></script>
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

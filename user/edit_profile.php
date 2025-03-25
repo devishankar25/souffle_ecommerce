@@ -1,6 +1,14 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start session only if not already active
+}
+include_once('../includes/db.php'); // Include the database connection
 
-$username = $_SESSION['username'];
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
+
+if (!$username) {
+    die('Error: User is not logged in.');
+}
 
 if (isset($_POST['update_profile'])) {
 
@@ -35,6 +43,82 @@ if (isset($_POST['update_profile'])) {
 
 ?>
 
+<style>
+    .centered-container {
+        margin: 20px auto;
+        max-width: 800px;
+    }
+
+    .update-profile {
+        width: 100%;
+        padding: 30px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .update-profile form {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px 30px;
+    }
+
+    .update-profile label {
+        font-weight: bold;
+        align-self: center;
+    }
+
+    .update-profile input,
+    .update-profile datalist {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .form-actions {
+        grid-column: span 2;
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        /* Space between buttons */
+        margin-top: 20px;
+    }
+
+    .form-actions input[type="submit"],
+    .form-actions a {
+        padding: 8px 15px;
+        /* Smaller padding for smaller buttons */
+        border: 1px solid seagreen;
+        border-radius: 5px;
+        font-size: 14px;
+        /* Smaller font size */
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .form-actions input[type="submit"] {
+        background-color: seagreen;
+        color: white;
+        border: none;
+    }
+
+    .form-actions input[type="submit"]:hover {
+        background-color: rgb(20, 67, 41);
+    }
+
+    .form-actions a {
+        text-decoration: none;
+        color: seagreen;
+        background-color: white;
+    }
+
+    .form-actions a:hover {
+        background-color: seagreen;
+        color: white;
+    }
+</style>
+
 <body>
     <div class="centered-container">
         <h4 class="text-center text-success mt-3 spaced-element">
@@ -56,52 +140,39 @@ if (isset($_POST['update_profile'])) {
 
             <form action="profile.php?edit_profile" method="post"
                 enctype="multipart/form-data">
+                <label for="update_fname">First Name:</label>
+                <input type="text" id="update_fname" name="update_fname"
+                    value="<?php echo isset($fetch['fname']) ? $fetch['fname'] : ""; ?>">
 
-                <div class="prod-container">
-                    <div class="pro-container">
+                <label for="update_lname">Last Name:</label>
+                <input type="text" id="update_lname" name="update_lname"
+                    value="<?php echo isset($fetch['lname']) ? $fetch['lname'] : ""; ?>">
 
-                        <span><strong>First Name:</strong></span>
-                        <input type="text" name="update_fname"
-                            value="<?php echo isset($fetch['fname']) ? $fetch['fname'] : ""; ?>"
-                            class="box"> [cite: 4, 5]
+                <label for="update_gender">Gender:</label>
+                <input type="text" id="update_gender" name="update_gender"
+                    value="<?php echo isset($fetch['gender']) ? $fetch['gender'] : ""; ?>" list="genders">
+                <datalist id="genders">
+                    <option value="Male">
+                    <option value="Female">
+                    <option value="Others">
+                </datalist>
 
-                        <span>Last Name:</span>
-                        <input type="text" name="update_lname"
-                            value="<?php echo isset($fetch['lname']) ? $fetch['lname'] : ""; ?>"
-                            class="box"> [cite: 5]
+                <label for="update_age">Age:</label>
+                <input type="number" id="update_age" name="update_age"
+                    value="<?php echo isset($fetch['age']) ? $fetch['age'] : ""; ?>" min="18">
 
-                        <span>Gender:</span>
-                        <input type="text" name="update_gender"
-                            value="<?php echo isset($fetch['gender']) ? $fetch['gender'] : ""; ?>"
-                            list="genders" class="box"> [cite: 5, 6]
-                        <datalist id="genders">
-                            <option value="Male">
-                            <option value="Female">
-                            <option value="Others">
-                        </datalist>
+                <label for="update_height">Height (in cms):</label>
+                <input type="number" id="update_height" name="update_height"
+                    value="<?php echo isset($fetch['height']) ? $fetch['height'] : ""; ?>" min="0">
 
-                        <span>Age:</span>
-                        <input type="number" name="update_age"
-                            value="<?php echo isset($fetch['age']) ? $fetch['age'] : ""; ?>"
-                            class="box" min="18"> [cite: 6, 7]
+                <label for="update_weight">Weight (in kgs):</label>
+                <input type="number" id="update_weight" name="update_weight"
+                    value="<?php echo isset($fetch['weight']) ? $fetch['weight'] : ""; ?>" min="0">
 
-                        <span>Height (in cms):</span>
-                        <input type="number" name="update_height"
-                            value="<?php echo isset($fetch['height']) ? $fetch['height'] : ""; ?>"
-                            class="box" min="0"> [cite: 7, 8]
-
-                        <span>Weight (in kgs):</span>
-                        <input type="number" name="update_weight"
-                            value="<?php echo isset($fetch['weight']) ? $fetch['weight'] : ""; ?>"
-                            class="box" min="0"> [cite: 8, 9]
-
-                    </div>
+                <div class="form-actions">
+                    <input type="submit" value="Update Profile" name="update_profile">
+                    <a href="profile.php">Go Back</a>
                 </div>
-
-                <input type="submit" value="Update Profile" name="update_profile"
-                    style="padding: 10px 20px; border: none; border-radius: 5px; background-color: seagreen; color: azure; cursor: pointer; text-decoration: none; font-size: 16px; background-color: seagreen;"
-                    onmouseover="this.style.backgroundColor='rgb(20, 67, 41)'"
-                    onmouseout="this.style.backgroundColor='seagreen'"> [cite: 9, 10]
 
                 <?php
                 if (isset($_POST['update_profile'])) {
@@ -110,10 +181,17 @@ if (isset($_POST['update_profile'])) {
                 }
                 ?>
 
-                <a href="profile.php" class="delete-btn">Go Back</a>
             </form>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

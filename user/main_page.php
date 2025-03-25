@@ -118,10 +118,21 @@
                 <button type="button" class="btn btn-lg w-100"><i class="fa fa-user-shield"></i> ADMIN</button>
             </a>
             <a href="user.php">
-                <button type="button" class="btn btn-lg w-100"><i class="fa fa-user"></i> USER</button>
+                <button type="button" class="btn btn-lg w-100"><i class="fa fa-user"></i> LOGIN</button>
+            </a>
+            <a href="signup.php">
+                <button type="button" class="btn btn-lg w-100"><i class="fa fa-user-plus"></i> REGISTER</button>
             </a>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

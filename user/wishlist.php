@@ -1,126 +1,108 @@
 <?php
 include('../includes/db.php');
-include('../includes/functions.php'); // Include functions.php
-
-session_start();
-
-$username = $_SESSION['username'];
-$pro_id = $_GET['prod_id'];
-
-$get_userid = "SELECT * FROM user WHERE username='$username'";
-$result = $conn->query($get_userid);
-
-if ($result) {
-    $row = $result->fetch_assoc();
-    $user_id = $row['user_id'];
-
-    if (add_to_wishlist($conn, $username, $pro_id)) {
-        echo "<script>alert('Product added to wishlist')</script>";
-        echo "<script>window.open('view_wishlist.php','_self')</script>";
-    } else {
-        echo "<script>alert('Product already added in wishlist')</script>";
-        echo "<script>window.open('product.php','_self')</script>";
-    }
-}
-
-$conn->close();
-?>
-
-<?php
-
-session_start();
 include('../includes/functions.php');
 
-$username = $_SESSION['username'];
+// Ensure session is started only once
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-if (!$username) {
-    echo "<script>alert('Please log in to view your wishlist.');</script>";
-    echo "<script>window.location.href='login.php';</script>";
+// Redirect if user is not logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: user.php");
     exit();
 }
 
-$query = $conn->prepare("SELECT w.product_id, p.pro_name, p.pro_price, p.pro_image 
+$username = $_SESSION['username'];
+
+// Add product to wishlist
+if (isset($_GET['prod_id'])) {
+    $pro_id = $_GET['prod_id'];
+    $user_id = get_user_id($conn, $username);
+
+    if ($user_id && add_to_wishlist($conn, $user_id, $pro_id)) {
+        echo "<script>alert('Product added to wishlist');</script>";
+    } else {
+        echo "<script>alert('Product already in wishlist');</script>";
+    }
+}
+
+// Delete product from wishlist
+if (isset($_GET['delete_id'])) {
+    $delete_id = $_GET['delete_id'];
+    $user_id = get_user_id($conn, $username);
+
+    $delete_query = $conn->prepare("DELETE FROM wishlist WHERE pro_id = ? AND user_id = ?");
+    $delete_query->bind_param("ii", $delete_id, $user_id);
+    $delete_query->execute();
+    header("Location: wishlist.php");
+    exit();
+}
+
+// Fetch wishlist items
+$query = $conn->prepare("SELECT w.pro_id AS product_id, p.pro_name, p.pro_price, p.pro_image 
                          FROM wishlist w 
-                         JOIN products p ON w.product_id = p.pro_id 
-                         WHERE w.username = ?");
+                         JOIN products p ON w.pro_id = p.pro_id 
+                         WHERE w.user_id = (SELECT user_id FROM user WHERE username = ?)");
 $query->bind_param("s", $username);
 $query->execute();
 $result = $query->get_result();
 ?>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wishlist</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        .centered-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .spaced-element {
-            margin: 10px 0;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/style.css"> <!-- Link to the external CSS file -->
 </head>
 
 <body>
-    <div class="centered-container">
-        <section id="header" class="bg-light p-3 spaced-element">
-            <div class="container d-flex justify-content-between align-items-center flex-wrap">
-                <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;"></a>
-                <ul id="navbar" class="d-flex align-items-center flex-wrap">
-                    <li><a href="profile.php"><i class="far fa-user"></i></a></li>
-                    <li><a href="../index.php">Home</a></li>
-                    <li><a href="product.php">Products</a></li>
-                    <li><a href="viewplan.php">Plans</a></li>
-                    <li><a href="viewsession.php">Sessions</a></li>
-                    <li><a href="viewfeedback.php">Reviews</a></li>
-                    <li><a href="contact.php">Contact</a></li>
-                    <li id="lg-bag">
-                        <a href="cart.php"><i class="fa-solid fa-cart-plus"></i>
-                            <sup><?php echo cart_item($conn); ?></sup>
-                        </a>
-                    </li>
-                    <li><a href="wishlist.php"><i class="far fa-heart"></i></a></li>
-                    <li><a href="#">Total: <?php echo total($conn); ?> /-</a></li>
-                    <li><a href="logout.php"><i class="fa fa-sign-out"></i></a></li>
-                </ul>
-            </div>
-        </section>
+    <!-- Navigation Bar -->
+    <?php include('../includes/navbar.php'); ?>
 
-        <section id="wishlist" class="mt-4 spaced-element">
-            <div class="container">
-                <h4 class="text-center">My Wishlist</h4>
-                <div class="row">
-                    <?php
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<div class='col-md-4 col-sm-6 mb-4'>
-                                    <div class='card'>
-                                        <img src='" . $row['pro_image'] . "' class='card-img-top' alt='" . htmlspecialchars($row['pro_name']) . "'>
-                                        <div class='card-body'>
-                                            <h5 class='card-title'>" . $row['pro_name'] . "</h5>
-                                            <p class='card-text'>Price: Rs. " . $row['pro_price'] . "/-</p>
-                                            <a href='product_details.php?prod_id=" . $row['product_id'] . "' class='btn btn-primary'>View Product</a>
-                                        </div>
-                                    </div>
-                                  </div>";
-                        }
-                    } else {
-                        echo "<h4 class='text-center text-danger'>Your wishlist is empty.</h4>";
-                    }
-                    ?>
-                </div>
+    <div class="container py-4">
+        <h4 class="text-center text-primary mb-4">My Wishlist</h4>
+        <?php if ($result->num_rows > 0): ?>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><img src="<?= $row['pro_image'] ?>" alt="<?= htmlspecialchars($row['pro_name']) ?>" style="width: 100px;"></td>
+                            <td><?= $row['pro_name'] ?></td>
+                            <td>Rs. <?= $row['pro_price'] ?>/-</td>
+                            <td>
+                                <a href="wishlist.php?delete_id=<?= $row['product_id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                                <a href="product_details.php?prod_id=<?= $row['product_id'] ?>" class="btn btn-primary btn-sm">View</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between">
+                <a href="products.php" class="btn btn-secondary">Continue Shopping</a>
+                <a href="checkout.php" class="btn btn-success">Checkout</a>
             </div>
-        </section>
+        <?php else: ?>
+            <h4 class="text-center text-danger">Your wishlist is empty.</h4>
+        <?php endif; ?>
     </div>
+
+    <footer>
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -1,64 +1,75 @@
 <?php
 include('../includes/db.php'); // Include database connection
-include('./functions.php/functions.php');
+include('../includes/functions.php'); // Ensure functions.php is included only once
 ?>
 
-<body>
+<!DOCTYPE html>
+<html lang="en">
 
-    <section id="header text-center">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessions - Souffle Bakery</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <?php include('../includes/navbar.php'); ?>
+
+    <!-- Header Section -->
+    <section id="header" class="text-center py-4">
         <div class="container">
-            <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;"></a>
-            <h2 class="text-success text-center m-4">SESSIONS</h2>
+            <h2 class="text-success">SESSIONS</h2>
         </div>
     </section>
 
-    <section id="product1" class="section-p1">
+    <!-- Sessions Section -->
+    <section id="product1" class="section-p1 py-4">
+        <div class="container">
+            <div class="row">
+                <?php
+                $sql = "SELECT * FROM session";
+                $result = $conn->query($sql);
 
-        <div class="pro-container">
-
-            <?php
-
-            $sql = "SELECT * FROM session";
-
-            // Execute the SQL query
-
-            $result = $conn->query($sql);
-
-            // Check if there are any sessions
-
-            if ($result->num_rows > 0) {
-
-                while ($row = $result->fetch_assoc()) {
-
-                    // Display session information
-
-                    echo "<div class='pro'>";
-
-                    echo "<div class='des'>";
-
-                    echo "<h3><strong> Session Id: " . $row["sess_id"] . "</strong></h5>";  // Corrected array key
-
-                    echo "<h5>Name: " . $row["sess_name"] . "</h5>";  // Corrected array key
-
-                    echo "<h5>Time: " . $row["start_sess"] . " to " . $row["end_sess"] . "</h5>";
-
-                    echo "<h5>Description: " . $row["sess_des"] . "</h5>"; // Corrected array key
-
-                    echo "<a href='" . $row['url'] . "' class='btn'>JOIN</a>";
-
-                    echo "</div>";
-
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<div class='col-md-4 mb-4'>";
+                        echo "<div class='card'>";
+                        echo "<div class='card-body'>";
+                        echo "<h5 class='card-title'><strong>Session Id: " . $row["sess_id"] . "</strong></h5>";
+                        echo "<p class='card-text'>Name: " . $row["sess_name"] . "</p>";
+                        echo "<p class='card-text'>Time: " . $row["start_sess"] . " to " . $row["end_sess"] . "</p>";
+                        echo "<p class='card-text'>Description: " . $row["sess_des"] . "</p>";
+                        echo "<a href='" . $row['url'] . "' class='btn btn-success'>JOIN</a>";
+                        echo "</div>";
+                        echo "</div>";
+                        echo "</div>";
+                    }
+                } else {
+                    echo "<div class='col-12 text-center'>";
+                    echo "<h4 class='text-danger'>No Sessions found</h4>";
                     echo "</div>";
                 }
-            } else {
-
-                echo "<center><h4 class='m-2 text-danger text-center'>No Sessions found</h4></center>";
-            }
-
-            ?>
+                ?>
+            </div>
         </div>
     </section>
 
+    <!-- Footer -->
+    <footer class="footer bg-light py-3">
+        <div class="container text-center">
+            <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

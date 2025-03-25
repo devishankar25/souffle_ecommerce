@@ -148,7 +148,7 @@ if (isset($_POST['login'])) {
                         <a href="forgot_pass.php" class="text-decoration-none"><i class="fa fa-key"></i> Forgot Password?</a>
                     </div>
                     <button type="submit" name="login" class="btn btn-success w-100 mt-3">Login Now</button>
-                    <p class="text-center mt-3">Don't have an account? <a href="user_signup.php" class="text-decoration-none"><i class="fa fa-user-plus"></i> Register now</a></p>
+                    <p class="text-center mt-3">Don't have an account? <a href="signup.php" class="text-decoration-none"><i class="fa fa-user-plus"></i> Register now</a></p>
                 </form>
             </div>
         </div>

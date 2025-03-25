@@ -167,6 +167,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             </div>
         </div>
     </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
