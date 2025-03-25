@@ -1,330 +1,345 @@
-<section id="page-header">
+<body>
+    <div class="centered-container">
+        <section id="page-header" class="spaced-element">
+            <div class="container text-center">
+                <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid mb-3" style="max-height: 50px;"></a>
+                <h2>#health_is_here</h2>
+                <h5>Maintain your health with Herbalife products</h5>
+            </div>
+        </section>
 
-<h2>#health_is_here</h2>
+        <section id="product1" class="section-p1 spaced-element">
 
-<h5>Maintain your health with Herbalife products</h5>
+            <h4>Products</h4>
 
-</section>
+            <h5>Which can change your Life</h5>
 
-<section id="product1" class="section-p1">
+            <form class="d-flex">
 
-<h4>Products</h4>
+                <input type="search" class="form-control me-2" placeholder="search" aria-label="search"
+                    name="search_data">
 
-<h5>Which can change your Life</h5>
+                <button type="submit" name="search_data_product">SEARCH</button>
+                <style>
+                    button {
 
-<form class="d-flex">
+                        border-radius: 10px;
 
-<input type="search" class="form-control me-2" placeholder="search" aria-label="search"
-name="search_data">
+                    }
 
-<button type="submit" name="search_data_product">SEARCH</button>
-<style>
+                    button:hover {
 
-button{
+                        background-color: SEAGREEN;
 
-border-radius: 10px;
+                        color: azure;
 
-}
+                        border-radius: 5px;
 
-button:hover{
+                    }
+                </style>
+            </form>
 
-background-color:SEAGREEN;
+            <?php
 
-color: azure;
+            $sql = "SELECT * FROM products";
 
-border-radius:5px;
+            if (isset($_GET['category'])) {
 
-}
+                $category_id = $_GET['category'];
+                $sql = "SELECT * FROM products WHERE category_id=$category_id";
 
-</style></form>
+                $result = $conn->query($sql);
+                if ($result->num_rows > 0) {
 
-<?php
+                    while ($row = $result->fetch_assoc()) {
 
-$sql = "SELECT * FROM products";
+                        echo "<div class='pro'>";
 
-if(isset($_GET['category'])) {
+                        echo "<img src='" . $row["pro_image"] . "' alt='" . $row["pro_name"] . "'>";
 
-$category_id = $_GET['category'];
-$sql = "SELECT * FROM products WHERE category_id=$category_id";
+                        echo "<div class='des'>";
 
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
+                        echo "<h5> Product Id: ", $row["pro_id"] . "</h5>";
 
-while($row = $result->fetch_assoc()) {
+                        echo "<h5>" . $row["pro_name"] . ":" . $row["pro_quantity"] . "gm</h5>";
 
-echo "<div class='pro'>";
+                        echo "<h5>" . $row["pro_des"] . "</h5>";
 
-echo "<img src='" . $row["pro_image"] . "' alt='" . $row["pro_name"] . "'>";
+                        echo "<div class='star'>";
 
-echo "<div class='des'>";
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<h5> Product Id: ", $row["pro_id"]."</h5>";
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<h5>".$row["pro_name"].":".$row["pro_quantity"]."gm</h5>";
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<h5>".$row["pro_des"]."</h5>";
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<div class='star'>";
+                        echo "</div>";
 
-echo "<i class='fas fa-star'></i>";
+                        echo "<h4>Rs." . $row["pro_price"] . "/-</h4>";
 
-echo "<i class='fas fa-star'></i>";
+                        echo "<form method='post' action='add_to_cart.php'>";
 
-echo "<i class='fas fa-star'></i>"
+                        echo "<input type='hidden' name='pro_id' value='" . $row["pro_id"] . "'>";
+                        echo "<input type='hidden' name='price' value='" . $row["pro_price"] . "'>"; // Add price Input field
 
-;
+                        echo "<a href='product.php?add_to_cart=" . $row["pro_id"] . "' class='btn'>Add to Cart</a>
+    <style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
+    left: 10px;}a.btn:hover{background-color:seagreen; color:azure; font-weight:600;}</style>";
 
-echo "<i class='fas fa-star'></i>";
+                        echo "<a href='product_details.php?pro_id=" . $row["pro_id"] . "' class='btn'>View More</a>
+    <style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
+    left: 10px;}a.btn:hover{background-color:seagreen; color:azure; font-weight:600;}</style>";
 
-echo "</div>";
+                        echo "</form>";
 
-echo "<h4>Rs.".$row["pro_price"]."/-</h4>";
+                        echo "</div>";
 
-echo "<form method='post' action='add_to_cart.php'>";
+                        echo "</div>";
+                    }
+                } else {
 
-echo "<input type='hidden' name='pro_id' value='" . $row["pro_id"] . "'>";
-echo "<input type='hidden' name='price' value='" . $row["pro_price"] . "'>"; // Add price Input field
+                    echo "<h4 class='m-2 text-danger'>No Products found</h4>";
+                }
+            }
 
-echo "<a href='product.php?add_to_cart=".$row["pro_id"]."' class='btn'>Add to Cart</a>
-<style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
-left: 10px;}a.btn:hover{background-color:seagreen; color:azure; font-weight:600;}</style>";
+            if (isset($_GET['brand'])) {
 
-echo "<a href='product_details.php?pro_id=".$row["pro_id"]."' class='btn'>View More</a>
-<style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
-left: 10px;}a.btn:hover{background-color:seagreen; color:azure; font-weight:600;}</style>";
+                $brand_id = $_GET['brand'];
 
-echo "</form>";
+                $sql = "SELECT * FROM products WHERE brand_id=$brand_id"; // Corrected SQL query
+                $result = $conn->query($sql);
 
-echo "</div>";
+                if ($result->num_rows > 0) {
 
-echo "</div>";
-}}else {
+                    while ($row = $result->fetch_assoc()) {
 
-echo "<h4 class='m-2 text-danger'>No Products found</h4>";}}
+                        echo "<div class='pro'>";
+                        echo "<img src='" . $row["pro_image"] . '"alt="' . $row["pro_name"] . '">';
 
-if(isset($_GET['brand']))
+                        echo "<div class='des'>";
 
-{
+                        echo "<h5> Product Id: " . $row["pro_id"] . "</h5>";
 
-$brand_id = $_GET['brand'];
+                        echo "<h5>" . $row["pro_name"] . ":" . $row["pro_quantity"] . " gm</h5>";
 
-$sql = "SELECT  FROM products WHERE brand_id=$brand_id";
-$result = $conn->query($sql);
+                        echo "<h5>" . $row["pro_des"] . "</h5>";
 
-if ($result->num_rows > 0) {
+                        echo "<div class='star'>";
 
-while($row = $result->fetch_assoc()) {
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<div class='pro'>";
-echo "<img src='" .$row["pro_image"].'"alt="' .$row["pro_name"] . '">'; 
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<div class='des'>";
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<h5> Product Id: ". $row["pro_id"]."</h5>";
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<h5>".$row["pro_name"].":".$row["pro_quantity"] . " gm</h5>";
+                        echo "</div>";
 
-echo "<h5>".$row["pro_des"]."</h5>";
+                        echo "<h4>Rs." . $row["pro_price"] . "/-</h4>";
 
-echo "<div class='star'>";
+                        echo "<form method='post' action='add_to_cart.php'>";
 
-echo "<i class='fas fa-star'></i>";
+                        echo "<input type='hidden' name='pro_id' value='" . $row["pro_id"] . "'>"; // Add product id
 
-echo "<i class='fas fa-star'></i>";
+                        echo "<input type='hidden' name='price' value='", $row["pro_price"] . "'>"; // Add price input
 
-echo "<i class='fas fa-star'></i>";
+                        echo "<a href='product.php?add_to_cart=" . $row["pro_id"] . "' class='btn'>Add to Cart</a>
+    <style>a.btn{background-color:darkseagreen; color:black; font-weight:600 margin-
+    left: 10px;}a.btn:hover{background-color:seagreen;color: azure; font-weight:600;}</style>";
 
-echo "<i class='fas fa-star'></i>";
+                        echo "<a href='product_details.php?pro_id=" . $row["pro_id"] . "' class='btn'>View More</a>
+    <style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
+    left: 10px; a.btn.hover{background-color:seagreen;color azure;font-weight:600;}</style>";
 
-echo "</div>";
+                        echo "</form>";
 
-echo "<h4>Rs.". $row["pro_price"]."/-</h4>";
+                        echo "</div>";
+                    }
+                } else {
 
-echo "<form method='post' action='add_to_cart.php'>";
 
-echo "<input type='hidden' name='pro_id' value='".$row["pro_id"]. "'>"; // Add product id
 
-echo "<input type='hidden' name='price' value='", $row["pro_price"] ."'>"; // Add price input
+                    echo "<h4 class='m-2 text-danger'>No Products found</h4>";
+                }
+            }
 
-echo "<a href='product.php?add_to_cart=".$row["pro_id"]."' class='btn'>Add to Cart</a>
-<style>a.btn{background-color:darkseagreen; color:black; font-weight:600 margin-
-left: 10px;}a.btn:hover{background-color:seagreen;color: azure; font-weight:600;}</style>";
+            if (isset($_GET['search_data_product'])) {
 
-echo "<a href='product_details.php?pro id=".$row["pro_id"]." class='btn'>View
-More</a><style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
-left: 10px; a.btn.hover{background-color:seagreen;color azure;font-weight:600;}</style>";
+                $search_value = $_GET['search_data'];
 
-echo "</form>";
+                $sql = "SELECT * FROM products WHERE pro_keyword LIKE '%$search_value%'";
 
-echo "</div>";}}
+                $result = $conn->query($sql);
 
-else {
+                if ($result->num_rows > 0) {
 
+                    while ($row = $result->fetch_assoc()) {
 
+                        echo "<div class='pro'>";
 
-echo "<h4 class='m-2 text-danger'>No Products found</h4>";}}
+                        echo "<img src='" . $row["pro_image"] . "'alt='" . $row["pro_name"] . "'>";
 
-if(isset($_GET['search_data_product'])) {
+                        echo "<div class='des'>";
 
-$search_value = $_GET['search_data'];
+                        echo "<h5> Product Id: " . $row["pro_id"] . "</h5>";
+                        echo "<h5>" . $row["pro_name"] . ":" . $row["pro_quantity"] . "gm</h5>";
 
-$sql = "SELECT * FROM products WHERE pro_keyword LIKE '%$search_value%'";
+                        echo "<h5>" . $row["pro_des"] . "</h5>";
 
-$result = $conn->query($sql);
+                        echo "<div class='star'>";
 
-if ($result->num_rows > 0) {
+                        echo "<i class='fas fa-star'></i>";
 
-while($row = $result->fetch_assoc()) {
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<div class='pro'>";
+                        echo "<i class='fas fa-star'></i>";
+                        echo "<i class='fas fa-star'></i>";
 
-echo "<img src='" .$row["pro_image"]. "'alt='".$row["pro_name"]. "'>";
+                        echo "</div>";
 
-echo "<div class='des'>";
+                        echo "<h4>Rs. " . $row["pro_price"] . "/-</h4>";
+                        echo "<form method='post' action='add_to_cart.php'>";
+                        echo "<input type='hidden' name='pro_id' value='"  . $row["pro_id"] . "'>"; // Add product id
+                        echo "<input type='hidden' name='price' value='" . $row["pro_price"] . "'>"; // Add price
 
-echo "<h5> Product Id: ". $row["pro_id"] . "</h5>";
-echo "<h5>".$row["pro_name"].":".$row["pro_quantity"]."gm</h5>";
+                        echo "<a href='product.php?add_to_cart=" . $row["pro_id"] . "' class='btn'>Add to Cart</a>
+    <style>a.btn{background-color:darkseagreen; color:black; font-weight:600 margin-
+    left: 10px;}a.btn:hover{background-color:seagreen;color: azure; font-weight:600;}</style>";
 
-echo "<h5>".$row["pro_des"]."</h5>";
+                        echo "<a href='product_details.php?pro_id=" . $row["pro_id"] . "' class='btn'>View More</a>
+    <style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
+    left: 10px; a.btn.hover{background-color:seagreen;color azure;font-weight:600;}</style>";
 
-echo "<div class='star'>";
+                        echo "</form>";
 
-echo "<i class='fas fa-star'></i>";
+                        echo "</div>";
+                    }
+                } else {
 
-echo "<i class='fas fa-star'></i>";
+                    echo "<h4 class='m-2
 
-echo "<i class='fas fa-star'></i>";
-echo "<i class='fas fa-star'></i>";
+    text-danger'>No Products found</h4>";
+                }
+            }
 
-echo "</div>";
+            if (isset($_GET['prod_id'])) {
 
-echo "<h4>Rs. ".$row["pro_price"]."/-</h4>";
-echo "<form method='post' action='add_to_cart.php'>";
-echo "<input type='hidden' name='pro_id' value='"  .$row["pro_id"]. "'>"; // Add product id
-echo "<input type='hidden' name='price' value='" .$row["pro_price"]. "'>"; // Add price
+                // Fetch related products
 
-echo "<a href='product.php?add_to_cart=".$row["pro_id"]."' class='btn'>Add to Cart</a>
-<style>a.btn{background-color:darkseagreen; color:black; font-weight:600 margin-
-left: 10px;}a.btn:hover{background-color:seagreen;color: azure; font-weight:600;}</style>";
+                $prod_id = $_GET['prod_id'];
 
-echo "<a href='product_details.php?pro id=".$row["pro_id"]."' class='btn'>View
-More</a><style>a.btn{background-color:darkseagreen; color:black; font-weight:600; margin-
-left: 10px; a.btn.hover{background-color:seagreen;color azure;font-weight:600;}</style>";
+                $stmt = "SELECT * FROM products WHERE pro_id=$prod_id";
 
-echo "</form>";
+                $result = $conn->query($stmt);
 
-echo "</div>";
+                if ($result->num_rows > 0) {
 
-}
+                    while ($row = $result->fetch_assoc()) {
 
-} else {
+                        echo "<div class='row'>";
 
-echo "<h4 class='m-2
+                        echo "<div class='col-md-12 mt-3'>";
 
-text-danger'>No Products found</h4>";}}
+                        echo "<h4 class='m-2 text-danger'>Related Products</h4>";
 
-if(isset($_GET['prod_id'])) {
+                        echo "</div>";
 
-// Fetch related products
+                        echo "<div class='col-md-3'>";
 
-$prod_id= $_GET['prod_id'];
+                        echo "<br><br><img src='./product_images/" . $row['pro_image2'] . "
+    class='w-
 
-$stmt = "SELECT * FROM products WHERE pro_id=$prod_id";
+    auto'><style>img{width:50%;height:50%;}</style>";
 
-$result = $conn->query($stmt);
+                        echo "</div>";
 
-if ($result->num_rows > 0) {
+                        echo "<div class='col-md-3'>";
 
-while($row = $result->fetch_assoc()) {
+                        echo "<br><br><img src='./product_images/" . $row['pro_image3'] . "' class='w-
+    auto'><style>img{width:50%;height:50%;}</style>";
 
-echo "<div class='row'>";
+                        echo "</div>";
+                    }
+                } else {
 
-echo "<div class='col-md-12 mt-3'>";
+                    echo "<h4 class='m-2 text-danger'>No Related Products found</h4>";
+                }
+            }
 
-echo "<h4 class='m-2 text-danger'>Related Products</h4>";
+            ?>
+            <div class="col-md-3 bg-secondary p-0 position:fixed m-5">
 
-echo "</div>";
+                <ul class="navbar-nav me-auto text-center">
 
-echo "<div class='col-md-3'>";
+                    <li class="nav-item bg-info">
+                        <a href="#" class="nav-link text-light">
+                            <h5>Delivery Brands</h5>
+                        </a>
 
-echo "<br><br><img src='./product_images/".$row['pro_image2']."
-class='w-
+                    </li>
 
-auto'><style>img{width:50%;height:50%;}</style>";
+                    <?php
+                    $select = "SELECT * FROM `brand ";
 
-echo "</div>";
+                    $result_select = $conn->query($select);
 
-echo "<div class='col-md-3'>";
+                    while ($row = mysqli_fetch_assoc($result_select)) {
 
-echo "<br><br><img src='./product_images/".$row['pro_image3']."' class='w-
-auto'><style>img{width:50%;height:50%;}</style>";
+                        $brand_title = $row['brand_title'];
 
-echo "</div>";}}
-else {
+                        $brand_id = $row['brand_id'];
+                        echo "<li class='nav-item '>
 
-echo "<h4 class='m-2 text-danger'>No Related Products found</h4>";}}
+    <a href='product.php?brand=$brand_id' class='nav-link text-
 
-?>
-<div class="col-md-3 bg-secondary p-0 position:fixed m-5">
+    light'>" . $row['brand_title'] . "</a>
 
-<ul class="navbar-nav me-auto text-center">
+    </li>";
+                    }
 
-<li class="nav-item bg-info">
-<a href="#" class="nav-link text-light"> <h5>Delivery Brands</h5></a>
+                    ?>
 
-</li>
+                </ul>
 
-<?php
-$select = "SELECT * FROM `brand ";
+                <ul class="navbar-nav me-auto text-center">
 
-$result_select = $conn->query($select);
+                    <li class="nav-item bg-info">
 
-while($row = mysqli_fetch_assoc($result_select)){
+                        <a href="#" class="nav-link text-light">
+                            <h5>Categories</h5>
+                        </a>
 
-$brand_title = $row['brand_title'];
+                    </li>
 
-$brand_id = $row['brand_id'];
-echo "<li class='nav-item '>
+                    <?php
 
-<a href='product.php?brand=$brand_id' class='nav-link text-
+                    $select = "SELECT * FROM `category`";
+                    $result_select = $conn->query($select);
 
-light'>".$row['brand_title']."</a>
+                    while ($row = mysqli_fetch_assoc($result_select)) {
 
-</li>";
+                        $category_title = $row['category_title'];
 
-}
+                        $category_id = $row['category_id'];
 
-?>
+                        echo "<li class='nav-item '>
 
-</ul>
+    <a href='product.php?category=$category_id' class='nav-link text-
 
-<ul class="navbar-nav me-auto text-center">
+    light'>" . $row['category_title'] . "</a>
 
-<li class="nav-item bg-info">
+    </li>";
+                    }
 
-<a href="#" class="nav-link text-light"> <h5>Categories</h5></a>
+                    ?>
+                </ul>
+            </div>
+    </div>
+    </section>
+    </div>
+</body>
 
-</li>
-
-<?php
-
-$select = "SELECT * FROM `category`";
-$result_select = $conn->query($select);
-
-while($row = mysqli_fetch_assoc($result_select))
-
-{
-
-$category_title = $row['category_title'];
-
-$category_id = $row['category_id'];
-
-echo "<li class='nav-item '>
-
-<a href='product.php?category=$category_id' class='nav-link text-
-
-light'>".$row['category_title']."</a>
-
-</li>";}
-
-?></ul></div></div></section></body></html>
+</html>

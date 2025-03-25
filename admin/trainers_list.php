@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 $username = $_SESSION['username'];
 $get_trainers = "SELECT * FROM `trainer_details`"; // Added backticks
 $result_trainers = $conn->query($get_trainers);
@@ -33,7 +34,7 @@ if ($result_trainers->num_rows > 0) {
         $trainer_work = $row['trainer_work'];
         $join_date = $row['join_date'];
         $sr_no++;
-        ?>
+?>
 
         <tr class='text-center'>
             <td><?php echo $sr_no ?></td>
@@ -50,7 +51,7 @@ if ($result_trainers->num_rows > 0) {
             </td>
             <td><?php echo $trainer_id ?></td>
             <td><?php echo $trainer_fname ?></td>
-            <td><?php echo $trainer_lname ?></td>  // Corrected variable name
+            <td><?php echo $trainer_lname ?></td> // Corrected variable name
             <td><?php echo $trainer_contact ?></td>
             <td><?php echo $trainer_qual ?></td>
             <td><?php echo $trainer_work ?></td>
@@ -59,7 +60,7 @@ if ($result_trainers->num_rows > 0) {
                         class='fa-solid fa-pen text-dark'></i></a></td>
         </tr>
 
-    <?php
+<?php
     }
 } else {
     echo "<h3 class='text-center text-danger'>No Trainers yet</h3>";
@@ -69,4 +70,5 @@ if ($result_trainers->num_rows > 0) {
 </tbody>
 </table>
 </body>
+
 </html>

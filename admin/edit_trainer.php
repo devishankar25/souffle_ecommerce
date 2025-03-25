@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 if (isset($_GET['edit_trainer'])) {
     $edit_id = $_GET['edit_trainer'];  //this will display id in the url [cite: 1]
     $get_data = "SELECT * FROM `trainer_details` WHERE `trainer_id` = '$edit_id'"; [cite: 1]
@@ -20,13 +21,42 @@ if (isset($_GET['edit_trainer'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Trainer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Spartan', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            color: #28a745;
+        }
+
+        .btn {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container mt-3 bg-light">
-        <h3 class="text-success text-center mt-5">
-            <strong>Edit Trainer Details</strong>
-        </h3>
+    <div class="container">
+        <h3 class="text-center"><strong>Edit Trainer Details</strong></h3>
         <form action="" method="post" enctype="multipart/form-data">
             <div class="form-outline m-auto">
                 <label for="trainer_id" class="form-label mt-3">Trainer ID:
@@ -54,33 +84,35 @@ if (isset($_GET['edit_trainer'])) {
                 <label for="trainer_work" class="form-label mt-3">Trainer Work Experience</label>
                 <textarea class="form-control w-90 mb-auto" id="trainer_work" name="trainer_work" required
                     onkeydown="return /[a-zA-Z0-9\s\-,\.]/i.test(event.key)"><?php echo $trainer_work; ?></textarea>  </div>
-            <div class="text-center mb-5">
+            <div class="text-center">
                 <input type="submit" name="edit_product" value="Update" class="btn px-3 mt-3 mb-5">  </div>
         </form>
     </div>
+
+    <?php
+    if (isset($_POST['edit_product'])) {  // Changed name attribute
+        $trainer_fname = $_POST['trainer_fname']; [cite: 5]
+        $trainer_lname = $_POST['trainer_lname'];  // Corrected variable name [cite: 5]
+        $trainer_contact = $_POST['trainer_contact']; [cite: 5]
+        $trainer_qual = $_POST['trainer_qual']; [cite: 5]
+
+        $update_query = "UPDATE `trainer_details` SET 
+            trainer_fname = '$trainer_fname', 
+            trainer_qual = '$trainer_qual', 
+            trainer_lname = '$trainer_lname',  // Corrected variable name
+            trainer_contact = '$trainer_contact' 
+            WHERE trainer_id='$edit_id'"; [cite: 5]
+
+        $result_update = $conn->query($update_query); [cite: 6]
+
+        if ($result_update) {
+            echo "<script>alert('Successfully updated trainer info')</script>"; [cite: 6]
+            echo "<script>window.open('admin_home.php?trainers_list','_self')</script>"; [cite: 6]
+        } else {
+            echo "<script>alert('Error updating trainer info')</script>";
+        }
+    }
+    ?>
 </body>
 
 </html>
-
-<?php
-if (isset($_POST['edit_product'])) {  // Changed name attribute
-    $trainer_fname = $_POST['trainer_fname']; [cite: 5]
-    $trainer_lname = $_POST['trainer_lname'];  // Corrected variable name [cite: 5]
-    $trainer_contact = $_POST['trainer_contact']; [cite: 5]
-    $trainer_qual = $_POST['trainer_qual']; [cite: 5]
-
-    $update_query = "UPDATE `trainer_details` SET 
-        trainer_fname = '$trainer_fname', 
-        trainer_qual = '$trainer_qual', 
-        trainer_lname = '$trainer_lname',  // Corrected variable name
-        trainer_contact = '$trainer_contact' 
-        WHERE trainer_id='$edit_id'"; [cite: 5]
-
-    $result_update = $conn->query($update_query); [cite: 6]
-
-    if ($result_update) {
-        echo "<script>alert('Successfully updated trainer info')</script>"; [cite: 6]
-        echo "<script>window.open('admin_home.php?trainers_list','_self')</script>"; [cite: 6]
-    }
-}
-?>

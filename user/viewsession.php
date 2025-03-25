@@ -1,62 +1,63 @@
 <?php
-
+include('../includes/db.php'); // Include database connection
 include('./functions.php/functions.php');
 ?>
 
 <body>
 
-<section id="header text-center">
+    <section id="header text-center">
+        <div class="container">
+            <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;"></a>
+            <h2 class="text-success text-center m-4">SESSIONS</h2>
+        </div>
+    </section>
 
-    <h2 class="text-success text-center m-4">SESSIONS</h2>
+    <section id="product1" class="section-p1">
 
-</section>
+        <div class="pro-container">
 
-<section id="product1" class="section-p1">
+            <?php
 
-    <div class="pro-container">
+            $sql = "SELECT * FROM session";
 
-        <?php
+            // Execute the SQL query
 
-        $sql = "SELECT * FROM session";
+            $result = $conn->query($sql);
 
-        // Execute the SQL query
+            // Check if there are any sessions
 
-        $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
 
-        // Check if there are any sessions
+                while ($row = $result->fetch_assoc()) {
 
-        if ($result->num_rows > 0) {
+                    // Display session information
 
-            while ($row = $result->fetch_assoc()) {
+                    echo "<div class='pro'>";
 
-                // Display session information
+                    echo "<div class='des'>";
 
-                echo "<div class='pro'>";
+                    echo "<h3><strong> Session Id: " . $row["sess_id"] . "</strong></h5>";  // Corrected array key
 
-                echo "<div class='des'>";
+                    echo "<h5>Name: " . $row["sess_name"] . "</h5>";  // Corrected array key
 
-                echo "<h3><strong> Session Id: " . $row["sess_id"] . "</strong></h5>";  // Corrected array key
+                    echo "<h5>Time: " . $row["start_sess"] . " to " . $row["end_sess"] . "</h5>";
 
-                echo "<h5>Name: " . $row["sess_name"] . "</h5>";  // Corrected array key
+                    echo "<h5>Description: " . $row["sess_des"] . "</h5>"; // Corrected array key
 
-                echo "<h5>Time: " . $row["start_sess"] . " to " . $row["end_sess"] . "</h5>";
+                    echo "<a href='" . $row['url'] . "' class='btn'>JOIN</a>";
 
-                echo "<h5>Description: " . $row["des"] . "</h5>";
+                    echo "</div>";
 
-                echo "<a href='" . $row['url'] . "' class='btn'>JOIN</a>";
+                    echo "</div>";
+                }
+            } else {
 
-                echo "</div>";
-
-                echo "</div>";
+                echo "<center><h4 class='m-2 text-danger text-center'>No Sessions found</h4></center>";
             }
-        } else {
 
-            echo "<center><h4 class='m-2 text-danger text-center'>No Sessions found</h4></center>";
-        }
-
-        ?>
-    </div>
-</section>
+            ?>
+        </div>
+    </section>
 
 </body>
 

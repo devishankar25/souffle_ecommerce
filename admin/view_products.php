@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Connect to the database
 $username = $_SESSION['username'];
 $get_products = "SELECT * FROM `products`"; // Added backticks [cite: 60, 61]
 $result = $conn->query($get_products);
@@ -31,7 +32,7 @@ if ($result->num_rows > 0) {
         $pro_cost_price = $row['pro_cost_price'];
         $pro_price = $row['pro_price'];
         $stock = $row['stock'];
-        ?>
+?>
 
         <tr class='text-center'>
             <td><?php echo $pro_id ?></td>
@@ -57,7 +58,7 @@ if ($result->num_rows > 0) {
                         class='fa-solid fa-trash-can text-dark'></i></a></td>
         </tr>
 
-    <?php
+<?php
     }
 } else {
     echo "<h3 class='text-danger text-center'>No Suppliers Added Yet</h3>";  // Corrected typo [cite: 64]

@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $pro_name = $_POST['pro_name'];
     $pro_image = $_FILES['pro_image']['name'];
@@ -38,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Products</title>
-    </head>
+</head>
 
 <body class="bg-light">
     <section id="container">
@@ -107,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="form-outline mb-4 w-80 m-auto">
                         <label for="pro_category" class="form-label text-left m-2 mt-2">Product
                             category</label>
-                        <select name="pro_category" id="pro_category" class="form-select m-2 mb-2 my-3 w-50">  // Added id
+                        <select name="pro_category" id="pro_category" class="form-select m-2 mb-2 my-3 w-50"> // Added id
                             <option value="">Select Category</option>
                             <?php
                             $select = "SELECT * FROM `category`";  // Added backticks
@@ -125,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     <div class="form-outline mb-4 w-80 m-auto">
                         <label for="pro_brand" class="form-label text-left m-2 mt-2">Delivery Brands</label>
-                        <select name="pro_brand" id="pro_brand" class="form-select m-2 mb-2 my-3 w-50">  // Added id
+                        <select name="pro_brand" id="pro_brand" class="form-select m-2 mb-2 my-3 w-50"> // Added id
                             <option value="">Select brand</option>
                             <?php
                             $select = "SELECT * FROM `brand`";  // Added backticks

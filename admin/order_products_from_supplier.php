@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 if (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
     $get_admin = "SELECT * FROM `admin_signup` WHERE username = '$username'"; //corrected query
@@ -8,12 +9,12 @@ if (isset($_SESSION['username'])) {
         $row = $result->fetch_assoc();
         $admin_id = $row['admin_id'];
 
-        if(isset($_POST['order'])){
+        if (isset($_POST['order'])) {
             $pro_name = $_POST['pro_name'];
             $quantity = array_values($_POST['quantity']);
             $batch = time();
 
-            foreach($pro_name as $key => $pro_names){
+            foreach ($pro_name as $key => $pro_names) {
                 $names = $pro_names;
                 $qnty = $quantity[$key];
                 $select_q = "SELECT * FROM `products` WHERE pro_name = '$names'"; //corrected query
@@ -32,7 +33,7 @@ if (isset($_SESSION['username'])) {
 
                 $result_insert = $conn->query($insert);
 
-                if($result_insert){
+                if ($result_insert) {
                     echo "<script>alert('Successfully Added products In Stock')</script>";
                     echo "<script>window.open('admin_home.php?view_order_from_supplier','_self')</script>";
                 } else {
@@ -67,10 +68,10 @@ if (isset($_SESSION['username'])) {
                     <?php
                     $select = "SELECT * FROM `products`"; //corrected query
                     $result = $conn->query($select);
-                    if($result){
-                        while($row=mysqli_fetch_assoc($result)){
-                            $pro_name=$row['pro_name'];
-                            $pro_id=$row['pro_id'];
+                    if ($result) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $pro_name = $row['pro_name'];
+                            $pro_id = $row['pro_id'];
                             echo "<option value='$pro_name'>$pro_name</option>";
                         }
                     }
@@ -87,10 +88,10 @@ if (isset($_SESSION['username'])) {
                     <?php
                     $select = "SELECT * FROM `supplier`"; //corrected query
                     $result = $conn->query($select);
-                    if($result){
-                        while($row=mysqli_fetch_assoc($result)){
-                            $supplier_name=$row['supplier_name'];
-                            $supplier_id=$row['supplier_id'];
+                    if ($result) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $supplier_name = $row['supplier_name'];
+                            $supplier_id = $row['supplier_id'];
                             echo "<option value='$supplier_name'>$supplier_name</option>";
                         }
                     }
@@ -102,9 +103,9 @@ if (isset($_SESSION['username'])) {
                 <span class="input-group-text bg-light" id="basic-addon1">
                     <i class="fa-solid fa-weight-scale"></i>
                 </span>
-                <input type="number" class="form-control row" placeholder="Quantity" 
-                       name="quantity" aria-describedby="basic-addon1" 
-                       onkeydown="return //i.test(event.key)" autocomplete="off" min="0" required>
+                <input type="number" class="form-control row" placeholder="Quantity"
+                    name="quantity" aria-describedby="basic-addon1"
+                    onkeydown="return //i.test(event.key)" autocomplete="off" min="0" required>
             </div>
         </div>
     </div>
@@ -118,13 +119,29 @@ if (isset($_SESSION['username'])) {
 </div>
 
 <script>
-$(document).ready(function(){
-    $(document).on('click','.i', function(){
-        $(this).closest('.main-form').remove();
-    });
+    $(document).ready(function() {
+        $(document).on('click', '.i', function() {
+            $(this).closest('.main-form').remove();
+        });
 
-    $(document).on('click', '.add-more-form', function(){
-        $('.paste-new-form').append('<div class="main-form mt-5" id="order_product_list"><div class="row" style="padding:6px; border-bottom:2px solid #e0e0e0; padding-bottom:20px;"><div class="inputs input-group mb-3"><span class="input-group-text bg-light" id="basic-addon1"><i class="fa-solid fa-tag"></i></span><select name="pro_name" id="pro_name" class="form-select"><option value="">Select Product Name</option><?php $select = "SELECT * FROM products"; $result = $conn->query($select); if($result){while($row=mysqli_fetch_assoc($result)){$pro_name=$row['pro_name']; $pro_id=$row['pro_id']; echo "<option value=\"$pro_name\">$pro_name</option>";}}?></select></div><div class="inputs input-group mb-3"><span class="input-group-text bg-light" id="basic-addon1"><i class="fa-solid fa-truck"></i></span><select name="supplier" id="supplier" class="form-select"><option value="">Select Supplier</option><?php $select = "SELECT * FROM `supplier`"; $result = $conn->query($select); if($result){while($row=mysqli_fetch_assoc($result)){$supplier_name=$row['supplier_name']; $supplier_id=$row['supplier_id']; echo "<option value=\"$supplier_name\">$supplier_name</option>";}}?></select></div><div class="inputs input-group mb-3 m-auto"><span class="input-group-text bg-light" id="basic-addon1"><i class="fa-solid fa-weight-scale"></i></span><input type="number" class="form-control row" placeholder="Quantity" name="quantity" aria-describedby="basic-addon1" onkeydown="return //i.test(event.key)" autocomplete="off" min="0" required> </div><div class="inputs input-group mb-3 m-auto"><i class="fa-solid fa-trash text-danger i"></i></div></div></div>');
+        $(document).on('click', '.add-more-form', function() {
+            $('.paste-new-form').append('<div class="main-form mt-5" id="order_product_list"><div class="row" style="padding:6px; border-bottom:2px solid #e0e0e0; padding-bottom:20px;"><div class="inputs input-group mb-3"><span class="input-group-text bg-light" id="basic-addon1"><i class="fa-solid fa-tag"></i></span><select name="pro_name" id="pro_name" class="form-select"><option value="">Select Product Name</option><?php $select = "SELECT * FROM products";
+                                                                                                                                                                                                                                                                                                                                                                                                                                        $result = $conn->query($select);
+                                                                                                                                                                                                                                                                                                                                                                                                                                        if ($result) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                $pro_name = $row['pro_name'];
+                                                                                                                                                                                                                                                                                                                                                                                                                                                $pro_id = $row['pro_id'];
+                                                                                                                                                                                                                                                                                                                                                                                                                                                echo "<option value=\"$pro_name\">$pro_name</option>";
+                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                                                                                                                                                                        } ?></select></div><div class="inputs input-group mb-3"><span class="input-group-text bg-light" id="basic-addon1"><i class="fa-solid fa-truck"></i></span><select name="supplier" id="supplier" class="form-select"><option value="">Select Supplier</option><?php $select = "SELECT * FROM `supplier`";
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $result = $conn->query($select);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            if ($result) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                while ($row = mysqli_fetch_assoc($result)) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    $supplier_name = $row['supplier_name'];
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    $supplier_id = $row['supplier_id'];
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    echo "<option value=\"$supplier_name\">$supplier_name</option>";
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } ?></select></div><div class="inputs input-group mb-3 m-auto"><span class="input-group-text bg-light" id="basic-addon1"><i class="fa-solid fa-weight-scale"></i></span><input type="number" class="form-control row" placeholder="Quantity" name="quantity" aria-describedby="basic-addon1" onkeydown="return //i.test(event.key)" autocomplete="off" min="0" required> </div><div class="inputs input-group mb-3 m-auto"><i class="fa-solid fa-trash text-danger i"></i></div></div></div>');
+        });
     });
-});
 </script>

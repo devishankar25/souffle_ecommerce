@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $sess_name = $_POST['sess_name'];
     $start_sess = $_POST['start_sess'];
@@ -83,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <input type="text" id="sess_name" name="sess_name" required>
 
             <label for="trainer_name">Trainer Name:</label>
-            <select name="trainer" id="trainer" class="form-select">  // Added id
+            <select name="trainer" id="trainer" class="form-select"> // Added id
                 <option value="">Select Trainer</option>
                 <?php
                 $select = "SELECT * FROM `trainer_details`";  // Added backticks

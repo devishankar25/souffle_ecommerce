@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 session_start();
 
 $username = $_SESSION['username'];
@@ -45,5 +46,3 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $stmt->close();
     $conn->close();
 }
-
-?>

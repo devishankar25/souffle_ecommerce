@@ -1,6 +1,6 @@
 <?php
-
-include('./functions.php/functions.php');
+include('../includes/db.php'); // Include database connection
+include('includes/functions.php');  // Added semicolon
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $username = $_POST["username"];
@@ -31,6 +31,7 @@ getClientIP();  // This function call seems out of place, might belong elsewhere
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
         section {
@@ -41,86 +42,89 @@ getClientIP();  // This function call seems out of place, might belong elsewhere
         }
     </style>
 </head>
+
 <body>
-<section>
-    <div class="form-box">
-        <div class="form-value">
-            <div class="popup">
-                <form action="user_signup.php" method="post">
-                    <h2>Register</h2>
-                    <div class="inputbox">
-                        <ion-icon name="user-outline"></ion-icon>
-                        <input type="text" name="username"
-                               onkeydown="return /^[a-zA-Z0-9@.]+$/i.test(event.key)" // corrected regex and added return [cite: 7]
-                               autocomplete="off" required>
-                        <label>Username</label>
-                    </div>
-                    <div class="inputbox">
-                        <ion-icon name="mail-outline"></ion-icon>
-                        <input type="email" name="email"
-                               onkeydown="return /^[a-zA-Z0-9@.]+$/i.test(event.key)" // corrected regex and added return [cite: 7]
-                               autocomplete="off" required>
-                        <label>Email</label>
-                    </div>
-                    <div class="inputbox">
-                        <ion-icon name="lock-closed-outline"></ion-icon>
-                        <input type="password" name="password" minlength="8"
-                               maxlength="15"
-                               autocomplete="off" required><br>
-                        <label>Password</label>
-                    </div>
-                    <div class="inputbox">
-                        <ion-icon name="lock-closed-outline"></ion-icon>
-                        <input type="password" name="cpassword" minlength="8" maxlength="15"
-                               autocomplete="off" required><br>
-                        <label>Confirm Password</label>
-                    </div>
-                    <div class="form-outline">
-                        <input type="submit" value="Create" name="submit" class="btn">
-                        <style>
-                            input.btn {
-                                font-weight: 700;
-                                margin-left: 120px;
-                                padding: 10px 20px;
-                                border: none;
-                                border-radius: 5px;
-                                background-color: seagreen;
-                                color: darkgreen;
-                                cursor: pointer;
-                                text-decoration: none;
-                                font-size: 16px;
-                                background-color: azure;
-                            }
+    <section>
+        <div class="form-box">
+            <div class="form-value">
+                <div class="popup text-center">
+                    <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid mb-3" style="max-height: 50px;"></a>
+                    <form action="user_signup.php" method="post">
+                        <h2>Register</h2>
+                        <div class="inputbox">
+                            <ion-icon name="user-outline"></ion-icon>
+                            <input type="text" name="username"
+                                onkeydown="return /^[a-zA-Z0-9@.]+$/i.test(event.key)" // corrected regex and added return [cite: 7]
+                                autocomplete="off" required>
+                            <label>Username</label>
+                        </div>
+                        <div class="inputbox">
+                            <ion-icon name="mail-outline"></ion-icon>
+                            <input type="email" name="email"
+                                onkeydown="return /^[a-zA-Z0-9@.]+$/i.test(event.key)" // corrected regex and added return [cite: 7]
+                                autocomplete="off" required>
+                            <label>Email</label>
+                        </div>
+                        <div class="inputbox">
+                            <ion-icon name="lock-closed-outline"></ion-icon>
+                            <input type="password" name="password" minlength="8"
+                                maxlength="15"
+                                autocomplete="off" required><br>
+                            <label>Password</label>
+                        </div>
+                        <div class="inputbox">
+                            <ion-icon name="lock-closed-outline"></ion-icon>
+                            <input type="password" name="cpassword" minlength="8" maxlength="15"
+                                autocomplete="off" required><br>
+                            <label>Confirm Password</label>
+                        </div>
+                        <div class="form-outline">
+                            <input type="submit" value="Create" name="submit" class="btn">
+                            <style>
+                                input.btn {
+                                    font-weight: 700;
+                                    margin-left: 120px;
+                                    padding: 10px 20px;
+                                    border: none;
+                                    border-radius: 5px;
+                                    background-color: seagreen;
+                                    color: darkgreen;
+                                    cursor: pointer;
+                                    text-decoration: none;
+                                    font-size: 16px;
+                                    background-color: azure;
+                                }
 
-                            input.btn:hover {
-                                background-color: rgb(20, 67, 41);
-                                color: azure;
-                            }
+                                input.btn:hover {
+                                    background-color: rgb(20, 67, 41);
+                                    color: azure;
+                                }
 
-                            p {
-                                font-weight: 700;
-                                margin-top: 10px;
-                            }
+                                p {
+                                    font-weight: 700;
+                                    margin-top: 10px;
+                                }
 
-                            a {
-                                margin-left: 40px;
-                                color: darkgreen;
-                                margin-left: 130px;
-                                text-decoration: none;
-                            }
+                                a {
+                                    margin-left: 40px;
+                                    color: darkgreen;
+                                    margin-left: 130px;
+                                    text-decoration: none;
+                                }
 
-                            a:hover {
-                                color: darkblue;
-                                text-decoration: underline;
-                            }
-                        </style>
-                        <p>Already have an account?</p>
-                        <a href="user.php">login</a>
-                    </div>
-                </form>
+                                a:hover {
+                                    color: darkblue;
+                                    text-decoration: underline;
+                                }
+                            </style>
+                            <p>Already have an account?</p>
+                            <a href="user.php">login</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 </body>
+
 </html>

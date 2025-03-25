@@ -1,4 +1,6 @@
-<?php 
+<?php
+include('../includes/db.php'); // Include database connection
+
 if (isset($_GET['update_p_order'])) {
     $edit_id = $_GET['update_p_order'];
 }
@@ -7,7 +9,7 @@ $get_data = "SELECT * FROM `product_orders` WHERE batch = '$edit_id'";  //correc
 $result_edit = $conn->query($get_data);
 
 if (isset($_POST['edit_product'])) {
-    foreach($_POST['quantity_received'] as $index => $received_quantity) {
+    foreach ($_POST['quantity_received'] as $index => $received_quantity) {
         $status = $_POST['status'][$index];
         $p_s_id = $_POST['p_s_id'][$index];
 
@@ -15,7 +17,7 @@ if (isset($_POST['edit_product'])) {
         $result_select = $conn->query($select);
         $row_select = $result_select->fetch_assoc();
 
-        if($result_select && $row_select) {
+        if ($result_select && $row_select) {
             $p_id = $row_select['p_s_id'];
             $quantity_ordered = $row_select['quantity_ordered'];
             $quantity_remaining = $quantity_ordered - $received_quantity;
@@ -27,7 +29,7 @@ if (isset($_POST['edit_product'])) {
             $stock_result = $conn->query($stock_query);
             $row_stock = $stock_result->fetch_assoc();
 
-            if($row_stock) {
+            if ($row_stock) {
                 $current_stock = $row_stock['stock'];
                 $updated_stock = $current_stock + $received_quantity;
 
@@ -57,7 +59,7 @@ if (isset($_POST['edit_product'])) {
     <div class="container mt-5">
         <form action="" method="post" enctype="multipart/form-data">
             <?php
-            if($result_edit->num_rows > 0) {
+            if ($result_edit->num_rows > 0) {
                 echo '<table class="table table-bordered mt-3">
                         <thead>
                             <tr>
@@ -72,7 +74,7 @@ if (isset($_POST['edit_product'])) {
                         </thead>
                         <tbody>';
 
-                while($row = mysqli_fetch_assoc($result_edit)) {
+                while ($row = mysqli_fetch_assoc($result_edit)) {
                     $p_id = $row['p_s_id'];
                     $pro_id = $row['pro_id'];
                     $quantity_ordered = $row['quantity_ordered'];
@@ -98,9 +100,9 @@ if (isset($_POST['edit_product'])) {
                     echo "<td>$supplier_name</td>";
                     echo "<td>
                             <select name='status' id='status' class='p-2'>
-                                <option value='ORDERED' ".($row['status'] == 'ORDERED' ? 'selected' : "").">ORDERED</option>
-                                <option value='ARRIVED' ".($row['status'] == 'ARRIVED' ? 'selected' : "").">ARRIVED</option>
-                                <option value='INCOMPLETE'".($row['status'] == 'INCOMPLETE' ? 'selected' : "").">INCOMPLETE</option>
+                                <option value='ORDERED' " . ($row['status'] == 'ORDERED' ? 'selected' : "") . ">ORDERED</option>
+                                <option value='ARRIVED' " . ($row['status'] == 'ARRIVED' ? 'selected' : "") . ">ARRIVED</option>
+                                <option value='INCOMPLETE'" . ($row['status'] == 'INCOMPLETE' ? 'selected' : "") . ">INCOMPLETE</option>
                             </select>
                           </td>";
                     echo "<input type='hidden' name='p_s_id' value='$p_id'>";

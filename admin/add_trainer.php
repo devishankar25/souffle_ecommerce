@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 if (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
     $get_admin = "SELECT * FROM `admin_signup` WHERE username = '$username'";
@@ -100,7 +101,7 @@ if (isset($_SESSION['username'])) {
 
             <div class="input-group mb-2 m-auto">
                 <span class="input-group-text bg-light" id="basic-addon1"><i class="fa-solid fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="Last Name" name="trainer_lname"  // corrected name
+                <input type="text" class="form-control" placeholder="Last Name" name="trainer_lname" // corrected name
                     aria-describedby="basic-addon1" onkeydown="return /[a-zA-Z]/i.test(event.key)" autocomplete="off"
                     required>
             </div>
@@ -132,7 +133,7 @@ if (isset($_SESSION['username'])) {
                 <span class="input-group-text bg-light" id="basic-addon1"><i
                         class="fa-solid fa-building-columns"></i></i></span>
                 <input type="text" class="form-control" placeholder="Qualification" name="trainer_qual"
-                    aria-describedby="basic-addon1" onkeydown="return /[a-zA-Z0-9 -,.\\/]/i.test(event.key)"  //Added escape character for backslash
+                    aria-describedby="basic-addon1" onkeydown="return /[a-zA-Z0-9 -,.\\/]/i.test(event.key)" //Added escape character for backslash
                     autocomplete="off" required>
             </div>
 
@@ -140,7 +141,7 @@ if (isset($_SESSION['username'])) {
                 <span class="input-group-text bg-light" id="basic-addon1"><i
                         class="fa-solid fa-book-journal-whills"></i></span>
                 <textarea type="text" class="form-control" placeholder="Work Experience" name="trainer_work"
-                    aria-describedby="basic-addon1" onkeydown="return /[a-zA-Z0-9 \-,.\\/]/i.test(event.key)"  //Added escape character for backslash
+                    aria-describedby="basic-addon1" onkeydown="return /[a-zA-Z0-9 \-,.\\/]/i.test(event.key)" //Added escape character for backslash
                     autocomplete="off" required></textarea>
             </div>
 

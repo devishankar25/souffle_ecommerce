@@ -1,4 +1,5 @@
 <?php
+include('../includes/db.php'); // Include database connection
 if (isset($_GET['edit_products'])) {
     $edit_id = $_GET['edit_products']; //this will display id in the url
     $get_data = "SELECT * FROM `products` WHERE pro_id = $edit_id";
@@ -35,9 +36,49 @@ if (isset($_GET['edit_products'])) {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Spartan', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            color: #28a745;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border: none;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+    </style>
+</head>
+
 <body>
-    <h3 class="text-success text-center"><strong>Edit Product</strong></h3>
-    <div class="container mt-5">
+    <div class="container">
+        <h3 class="text-center"><strong>Edit Product</strong></h3>
         <form action="" method="post" enctype="multipart/form-data">
             <div class="form-outline w-50 m-auto">
                 <label for="pro_id" class="form-label mt-3">Product ID</label>: <?php echo $pro_id; ?>
@@ -122,7 +163,7 @@ if (isset($_GET['edit_products'])) {
                 <label for="pro_cost" class="form-label mt-3">Product Cost</label>
                 <input type="number" class="form-control" id="pro_cost" name="pro_cost" value="<?php echo $pro_cost ?>" required>
             </div>
-            <div class="text-align-center">
+            <div class="text-center">
                 <input type="submit" name="edit_product" value="Update Product" class="btn btn-info mb-3 px-3 mt-3">
             </div>
         </form>
@@ -171,7 +212,11 @@ if (isset($_GET['edit_products'])) {
         if ($result_update) {
             echo "<script>alert('Product updated successfully')</script>";
             echo "<script>window.open('admin_home.php?view_products', '_self')</script>";
+        } else {
+            echo "<script>alert('Error updating product')</script>";
         }
     }
     ?>
 </body>
+
+</html>

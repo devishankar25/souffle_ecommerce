@@ -1,4 +1,6 @@
-<?php 
+<?php
+include('../includes/db.php'); // Include database connection
+
 if (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];
 }
@@ -10,7 +12,7 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $admin_id = $row['admin_id'];
 
-    if(isset($_POST['add_supplier'])){
+    if (isset($_POST['add_supplier'])) {
         $supplier_name = $_POST['supplier_name'];
         $email = $_POST['supplier_email'];
         $supplier_name = $conn->real_escape_string($supplier_name);
@@ -27,7 +29,7 @@ if ($result->num_rows > 0) {
                 echo "<script>alert('Supplier added successfully')</script>";
                 exit();
             } else {
-                echo "Error: ".$sql_insert. "<br>", $conn->error;
+                echo "Error: " . $sql_insert . "<br>", $conn->error;
             }
         }
     }
@@ -43,11 +45,11 @@ if ($result->num_rows > 0) {
                     <i class="fa-solid fa-table"></i>
                 </span>
                 <input type="text" class="form-control" placeholder="Insert Supplier"
-                       name="supplier_name" aria-describedby="basic-addon1" 
-                       onkeydown="return /[a-zA-Z-]/.test(event.key)" autocomplete="off" required>
+                    name="supplier_name" aria-describedby="basic-addon1"
+                    onkeydown="return /[a-zA-Z-]/.test(event.key)" autocomplete="off" required>
                 <input type="email" class="form-control" placeholder="Insert Email"
-                       name="supplier_email" aria-describedby="basic-addon1" 
-                       onkeydown="return /[a-zA-Z@.]/.test(event.key)" autocomplete="off" required>
+                    name="supplier_email" aria-describedby="basic-addon1"
+                    onkeydown="return /[a-zA-Z@.]/.test(event.key)" autocomplete="off" required>
             </div>
             <div class="input-group w-10 mb-2 m-auto">
                 <button type="submit" class="p-2 my-2" name="add_supplier">Submit</button>

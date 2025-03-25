@@ -1,4 +1,6 @@
 <?php
+include('../includes/db.php'); // Include database connection
+
 $get_payments = "SELECT * FROM `user_payments`"; // Corrected query [cite: 79, 80, 81]
 $result = $conn->query($get_payments);
 
@@ -49,4 +51,3 @@ if ($result->num_rows > 0) {
 echo "
     </tbody>
 </table>";
-?>

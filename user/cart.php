@@ -1,145 +1,83 @@
 <?php
 
+session_start();
+include('../includes/functions.php');
+
 $get_ip = getClientIP();
 $total = 0;
-$sql = "SELECT * FROM `cart` WHERE ip_address='$get_ip'";
-$result = $conn->query($sql);
-$result_count = mysqli_num_rows($result);
+
+$query = $conn->prepare("SELECT c.pro_id, c.quantity, p.pro_name, p.pro_price, p.pro_image 
+                         FROM cart c 
+                         JOIN products p ON c.pro_id = p.pro_id 
+                         WHERE c.ip_address = ?");
+$query->bind_param("s", $get_ip);
+$query->execute();
+$result = $query->get_result();
 ?>
 
-<body <section id="page">
+<html>
 
-    <h2>My Cart</h2>
+<head>
+    <title>My Cart</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
 
-    </section>
-
-    <section id="product1" class="section-p1">
-
-        <div class="container">
-
-            <div class="row">
-
-                <form action="" method="post">
-
-                    <table class="table table-bordered">
-
-                        <?php
-                        if ($result_count > 0) {
-                            echo "
-        <h4>Products</h4>
-        <h5>which you choosed</h5>
-        <thead>
-            <tr>
-                <th>Product Id</th>
-                <th>Product Image</th>
-                <th>Product Name</th>
-                <th>Product Quantity</th>
-                <th>Product Price</th>
-                <th>Remove</th>
-                <th colspan='2'>Operations</th>
-            </tr>
-        </thead>
-        <tbody>";
-
-                            while ($row = mysqli_fetch_array($result)) {
-                                $pro_id = $row['pro_id'];
-                                $get_price = "SELECT * FROM `products` WHERE pro_id='$pro_id'";
-                                $result_products = $conn->query($get_price);
-
-                                while ($row_products = mysqli_fetch_array($result_products)) {
-                                    $pro_price = array($row_products['pro_price']);
-                                    $pro_name = $row_products['pro_name'];
-                                    $pro_image = $row_products['pro_image'];
-                                    $pro_price_sum = array_sum($pro_price);
-                                    $total = $total + $pro_price_sum;
-                                    ?>
-
-                                    <tr>
-                                        <td><?php echo $pro_id ?></td>
-                                        <td><img src="./product_images/<?php echo $pro_image ?>" alt="" class="cart_img">
-                                        </td>
-                                        <td><?php echo $pro_name ?></td>
-                                        <td>
-                                            <input type="text" name="qty"
-                                                   value="<?php $get_quantity = "SELECT * FROM `cart` WHERE pro_id='$pro_id'";
-                                                   $result_qty = $conn->query($get_quantity);
-                                                   $row_qty = mysqli_fetch_array($result_qty);
-                                                   echo $row_qty['quantity']; ?>">
-                                            <style>input {
-                                                    width: 30%;
-                                                }</style>
-                                            <?php
-                                            $get_ip = getClientIP();
-                                            if (isset($_POST['update_cart'])) {
-                                                $quantities = $_POST['qty'];
-                                                $update_cart = "UPDATE `cart` SET quantity=$quantities WHERE ip_address='$get_ip'";
-                                                $result_update = $conn->query($update_cart);
-                                                $total = $total + $quantities;
-                                            }
-                                            ?>
-                                        </td>
-                                        <td><?php echo $row_products['pro_price'] ?></td>
-                                        <td>
-                                            <input type="checkbox" name="remove_item" id=""
-                                                   value="<?php echo $pro_id ?>">
-                                            </td>
-                                        </tr>
-                                    <style>
-                                        img.cart_img {
-                                            width: 80px;
-                                            height: 80px
-                                        }
-                                    </style>
-                                    <?php
-                                }
-                            }
-                        } else {
-                            echo "<h4 class='text-center text-danger'>No products in Cart</h4>";
-                        }
-                        ?>
-                        </tbody>
-                    </table>
-                    <?php
-                    $get_ip = getClientIP();
-                    $cart_query = "SELECT * FROM `cart` WHERE ip_address= '$get_ip'";
-                    $result_query = $conn->query($cart_query);
-                    $result_counts = mysqli_num_rows($result_query);
-                    if ($result_counts > 0) {
-                        echo "
-    <div class='total d-flex'>
-        <h4>Total: $total /- </h4>
-        <input type='submit' value='Continue Shopping' class='btn' name='continue_shopping'>
-        <button class='btn'><a href='checkout.php'>Checkout</a></button>
-    </div>";
-                    } else {
-                        echo "
-    <div class='total d-flex'>
-        <input type='submit' value='Continue Shopping' class='btn' name='continue_shopping'>
-        <style>
-            input.btn {
-                margin-left: 10px;
-                font-size: 20px;
-                background-color: #6aa6a2;
-                padding: 5px;
-                border-radius: 5px;
-                border: none;
-                font-weight: 700;
-                width: auto;
-            }
-
-            button.btn:hover {
-                background-color: azure;
-            }
-        </style>
-    </div>";
-                    }
-                    if (isset($_POST['continue_shopping'])) {
-                        echo "<script>window.open('product.php','_self')</script>";
-                    } ?>
-                </form>
+<body>
+    <div class="centered-container">
+        <section id="header" class="bg-light p-3 spaced-element">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a href="../index.php"><img src="../images/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px;"></a>
+                <ul id="navbar" class="d-flex align-items-center">
+                    <li><a href="profile.php"><i class="far fa-user"></i></a></li>
+                    <li><a href="../index.php">Home</a></li>
+                    <li><a href="product.php">Products</a></li>
+                    <li><a href="viewplan.php">Plans</a></li>
+                    <li><a href="viewsession.php">Sessions</a></li>
+                    <li><a href="viewfeedback.php">Reviews</a></li>
+                    <li><a href="contact.php">Contact</a></li>
+                    <li id="lg-bag">
+                        <a href="cart.php"><i class="fa-solid fa-cart-plus"></i>
+                            <sup><?php echo cart_item($conn); ?></sup>
+                        </a>
+                    </li>
+                    <li><a href="wishlist.php"><i class="far fa-heart"></i></a></li>
+                    <li><a href="#">Total: <?php echo total($conn); ?> /-</a></li>
+                    <li><a href="logout.php"><i class="fa fa-sign-out"></i></a></li>
+                </ul>
             </div>
-        </div>
-    </section>
-    </body>
+        </section>
 
-    </html>
+        <section id="cart" class="mt-4 spaced-element">
+            <div class="container">
+                <h4>My Cart</h4>
+                <div class="row">
+                    <?php
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            $total += $row['pro_price'] * $row['quantity'];
+                            echo "<div class='col-md-4 mb-4'>
+                                    <div class='card'>
+                                        <img src='" . $row['pro_image'] . "' class='card-img-top' alt='" . htmlspecialchars($row['pro_name']) . "'>
+                                        <div class='card-body'>
+                                            <h5 class='card-title'>" . $row['pro_name'] . "</h5>
+                                            <p class='card-text'>Price: Rs. " . $row['pro_price'] . "/-</p>
+                                            <p class='card-text'>Quantity: " . $row['quantity'] . "</p>
+                                        </div>
+                                    </div>
+                                  </div>";
+                        }
+                        echo "<h5 class='text-end'>Total: Rs. $total /-</h5>";
+                    } else {
+                        echo "<h4 class='text-center text-danger'>Your cart is empty.</h4>";
+                    }
+                    ?>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

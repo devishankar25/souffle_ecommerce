@@ -1,5 +1,5 @@
 <?php
-// filepath: c:\xampp\htdocs\souffle_ecommerce\includes\functions.php
+include('db.php'); // Include database connection
 
 // Ensure session is started
 if (session_status() === PHP_SESSION_NONE) {
@@ -7,7 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Get the client's IP address
-function getClientIP() {
+function getClientIP()
+{
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
         return $_SERVER['HTTP_CLIENT_IP'];
     } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -18,30 +19,37 @@ function getClientIP() {
 }
 
 // Count the number of items in the cart
-function cart_item() {
-    return isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0;
+function cart_item($conn)
+{
+    $user_id = $_SESSION['user_id'] ?? 0; // Ensure user ID is set
+    $query = "SELECT COUNT(*) AS item_count FROM cart WHERE user_id = $user_id";
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    return $row['item_count'] ?? 0;
 }
 
 // Calculate the total price of items in the cart
-function total() {
-    $total = 0;
-    if (isset($_SESSION['cart'])) {
-        foreach ($_SESSION['cart'] as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
-    }
-    return $total;
+function total($conn)
+{
+    $user_id = $_SESSION['user_id'] ?? 0; // Ensure user ID is set
+    $query = "SELECT SUM(price * quantity) AS total_price FROM cart WHERE user_id = $user_id";
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    return $row['total_price'] ?? 0;
 }
 
 // Get user order details
-function get_user_order_details($conn) {
+function get_user_order_details($conn)
+{
     if (!isset($_SESSION['username'])) {
         return "No user is logged in.";
     }
 
-    $username = $conn->real_escape_string($_SESSION['username']);
-    $query = "SELECT * FROM orders WHERE username = '$username' AND status = 'pending'";
-    $result = $conn->query($query);
+    $username = $_SESSION['username'];
+    $query = $conn->prepare("SELECT * FROM orders WHERE username = ? AND status = 'pending'");
+    $query->bind_param("s", $username);
+    $query->execute();
+    $result = $query->get_result();
 
     $orders = [];
     if ($result && $result->num_rows > 0) {
@@ -57,39 +65,40 @@ function get_user_order_details($conn) {
 }
 
 // Manage cart functionality
-function cart() {
-    if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = []; // Initialize an empty cart if it doesn't exist
-    }
-
+function cart($conn)
+{ // Ensure $conn is passed
     if (isset($_GET['add_to_cart'])) {
         $product_id = $_GET['add_to_cart'];
+        $ip_address = getClientIP();
 
-        if (!in_array($product_id, array_column($_SESSION['cart'], 'id'))) {
-            $_SESSION['cart'][] = ['id' => $product_id, 'quantity' => 1];
+        $query = $conn->prepare("SELECT * FROM cart WHERE pro_id = ? AND ip_address = ?");
+        $query->bind_param("is", $product_id, $ip_address);
+        $query->execute();
+        $result = $query->get_result();
+
+        if ($result->num_rows == 0) {
+            $insert_query = $conn->prepare("INSERT INTO cart (pro_id, ip_address, quantity) VALUES (?, ?, 1)");
+            $insert_query->bind_param("is", $product_id, $ip_address);
+            $insert_query->execute();
             echo "<script>alert('Product added to cart!');</script>";
         } else {
             echo "<script>alert('Product is already in the cart!');</script>";
         }
     }
 }
-function add_to_wishlist($username, $product_id) {
-    global $conn; // Ensure you have a database connection
 
-    // Check if the product is already in the wishlist
-    $query = "SELECT * FROM wishlist WHERE username = '$username' AND product_id = '$product_id'";
-    $result = $conn->query($query);
+function add_to_wishlist($conn, $username, $product_id)
+{
+    $query = $conn->prepare("SELECT * FROM wishlist WHERE username = ? AND product_id = ?");
+    $query->bind_param("si", $username, $product_id);
+    $query->execute();
+    $result = $query->get_result();
 
     if ($result->num_rows > 0) {
         return false; // Product already in wishlist
     }
 
-    // Add the product to the wishlist
-    $insert_query = "INSERT INTO wishlist (username, product_id) VALUES ('$username', '$product_id')";
-    if ($conn->query($insert_query)) {
-        return true; // Successfully added
-    } else {
-        return false; // Failed to add
-    }
+    $insert_query = $conn->prepare("INSERT INTO wishlist (username, product_id) VALUES (?, ?)");
+    $insert_query->bind_param("si", $username, $product_id);
+    return $insert_query->execute();
 }
-?>
