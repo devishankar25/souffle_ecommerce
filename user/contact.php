@@ -27,7 +27,6 @@ include('../includes/functions.php');
         <footer class="row g-4">
             <div class="col-md-3 text-center">
                 <a href="../index.php">
-                    <img src="../images/logo.png" alt="Logo" class="img-fluid mb-3" style="max-height: 50px;">
                 </a>
                 <h4><strong>Contact</strong></h4>
                 <p>Address: Shop No. 4, Modi Bhavan, Gamdevi, Grant Road (W)</p>
@@ -37,8 +36,7 @@ include('../includes/functions.php');
                     <h5><strong>Follow Us</strong></h5>
                     <div class="d-flex justify-content-center gap-3">
                         <a href="#" class="text-dark"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-dark"><i class "fab fa-instagram"></i></a>
-                    </div>
+                        <a href="#" class="text-dark"><i class="fab fa-instagram"></i></a>                    </div>
                 </div>
             </div>
             <div class="col-md-3 text-center">
@@ -53,7 +51,7 @@ include('../includes/functions.php');
             <div class="col-md-3 text-center">
                 <h4><strong>My Account</strong></h4>
                 <ul class="list-unstyled mt-3">
-                    <li><a href="#" class="text-dark">Sign In</a></li>
+                    <li><a href="signup.php" class="text-dark">Sign In</a></li>
                     <li><a href="cart.php" class="text-dark">View Cart</a></li>
                 </ul>
             </div>

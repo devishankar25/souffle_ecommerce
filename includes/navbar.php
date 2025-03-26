@@ -12,7 +12,6 @@
                 <li class="nav-item"><a href="../index.php" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="product.php" class="nav-link">Products</a></li>
                 <li class="nav-item"><a href="viewplan.php" class="nav-link">Plans</a></li>
-                <li class="nav-item"><a href="viewsession.php" class="nav-link">Sessions</a></li>
                 <li class="nav-item"><a href="viewfeedback.php" class="nav-link">Reviews</a></li>
                 <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
                 <li class="nav-item">

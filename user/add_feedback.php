@@ -1,5 +1,7 @@
 <?php
-include('../includes/db.php'); // Include database connection
+
+include('../includes/db.php');
+include('../includes/functions.php');
 session_start();
 
 $username = $_SESSION['username'];

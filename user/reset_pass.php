@@ -1,4 +1,6 @@
 <?php
+include('../includes/db.php');
+include('../includes/functions.php');
 
 if (isset($_POST['reset'])) {
     $new_password = $_POST['new_password'];

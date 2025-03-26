@@ -1,6 +1,9 @@
 <?php
 session_start();
+
+include('../includes/db.php');
 include('../includes/functions.php');
+
 $username = $_SESSION['username'] ?? null;
 
 if (isset($_POST['add_to_cart'])) {

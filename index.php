@@ -17,6 +17,15 @@ include('includes/db.php'); // Include database connection
             background-color: #e3f2fd;
             /* Cool light blue */
             font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #0288d1;
+        }
+
+        .navbar .nav-link {
+            color: white !important;
         }
 
         nav.navbar a {
@@ -135,7 +144,6 @@ include('includes/db.php'); // Include database connection
                 <li><a class="active" href="index.php">Home</a></li>
                 <li><a href="user/product.php">Products</a></li>
                 <li><a href="user/viewplan.php">Plans</a></li>
-                <li><a href="user/viewsession.php">Sessions</a></li>
                 <li><a href="user/viewfeedback.php">Reviews</a></li>
                 <li><a href="user/contact.php">Contact</a></li>
                 <li id="lg-bag" class="ms-3">
