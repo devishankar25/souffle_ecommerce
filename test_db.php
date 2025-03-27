@@ -1,9 +1,9 @@
 <?php
 // Database connection details
-$host = 'localhost';
+$host = 'localhost:3307';
 $username = 'root';
 $password = '';
-$database = 'souffle_ecommerce';
+$database = 'souffle_db';
 
 // Create a connection
 $conn = new mysqli($host, $username, $password, $database);

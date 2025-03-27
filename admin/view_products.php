@@ -1,69 +1,57 @@
 <?php
-include('../includes/db.php'); // Connect to the database
-$username = $_SESSION['username'];
-$get_products = "SELECT * FROM `products`"; // Added backticks [cite: 60, 61]
-$result = $conn->query($get_products);
-if ($result->num_rows > 0) {
-    echo "
-    <h3 class='text-success text-center mx-5'>All Products</h3>
-    <table class='table table-bordered mt-3 mx-5'>
-        <thead>
-            <tr>
-                <th>Product Id</th>
-                <th>Product Name</th>
-                <th>Product Image</th>
-                <th>Quantity</th>
-                <th>Product Cost Price</th>
-                <th>Product Price</th>
-                <th>Supplier</th>
-                <th>Stock</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody>";
-    while ($row = mysqli_fetch_assoc($result)) {
-        $s_id = $row['supplier_id'];
-        $pro_id = $row['pro_id'];
-        $admin_id = $row['admin_id'];
-        $pro_name = $row['pro_name'];
-        $pro_image = $row['pro_image'];
-        $pro_quantity = $row['pro_quantity'];
-        $pro_cost_price = $row['pro_cost_price'];
-        $pro_price = $row['pro_price'];
-        $stock = $row['stock'];
-?>
+// Start session
+session_start();
 
-        <tr class='text-center'>
-            <td><?php echo $pro_id ?></td>
-            <td><?php echo $pro_name ?></td>
-            <td><img src='<?php echo $pro_image ?>' class='prod_image' alt='<?php echo $pro_name ?>'></td>
-            <td><?php echo $pro_quantity ?></td>
-            <td><?php echo $pro_cost_price ?></td>
-            <td><?php echo $pro_price ?></td>
-            <td>
-                <?php
-                $get_supplier = "SELECT * FROM `supplier` WHERE `supplier_id` = '$s_id'";  // Added backticks [cite: 61, 62, 63, 64]
-                $result_supplier = $conn->query($get_supplier);
-                if ($result_supplier) {
-                    $row_supplier = $result_supplier->fetch_assoc();
-                    echo $row_supplier['supplier_name'];
-                }
-                ?>
-            </td>
-            <td><?php echo $stock ?></td>
-            <td><a href='admin_home.php?edit_products=<?php echo $pro_id; ?>'><i
-                        class='fa-solid fa-pen-to-square text-dark'></i></a></td>
-            <td><a href='admin_home.php?trash_products=<?php echo $pro_id; ?>'><i
-                        class='fa-solid fa-trash-can text-dark'></i></a></td>
-        </tr>
+// Include database connection
+include '../includes/db.php';
 
-<?php
-    }
-} else {
-    echo "<h3 class='text-danger text-center'>No Suppliers Added Yet</h3>";  // Corrected typo [cite: 64]
-}
+// Fetch products from the database
+$products_query = "SELECT Pro_id, pro_name, Pro_price, stock FROM products";
+$products_result = mysqli_query($conn, $products_query);
 ?>
-</tbody>
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Products</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">Product List</h2>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($product = mysqli_fetch_assoc($products_result)) { ?>
+                    <tr>
+                        <td><?php echo $product['Pro_id']; ?></td>
+                        <td><?php echo $product['pro_name']; ?></td>
+                        <td>$<?php echo $product['Pro_price']; ?></td>
+                        <td><?php echo $product['stock']; ?></td>
+                        <td>
+                            <a href="edit_products.php?id=<?php echo $product['Pro_id']; ?>" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="delete_product.php?id=<?php echo $product['Pro_id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?');">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+</html>

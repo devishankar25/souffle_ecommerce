@@ -1,63 +1,56 @@
 <?php
-include('../includes/db.php'); // Include database connection
+// Start the session
+session_start();
+
+// Include database connection
+include '../includes/db.php';
+
+// Fetch orders from the database
+$query = "SELECT * FROM user_order ORDER BY order_date DESC";
+$result = mysqli_query($conn, $query);
 ?>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 <body>
-    <?php
-    $get_orders = "SELECT * FROM `user_order`";  // Corrected query
-    $result = $conn->query($get_orders);
+    <div class="container mt-4">
+        <h2 class="mb-4">Order List</h2>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Order ID</th>
+                    <th>User ID</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                    <tr>
+                        <td><?php echo $row['order_id']; ?></td>
+                        <td><?php echo $row['user_id']; ?></td>
+                        <td>$<?php echo $row['Due_amount']; ?></td>
+                        <td><?php echo ucfirst($row['Order_status']); ?></td>
+                        <td><?php echo $row['Order_date']; ?></td>
+                        <td>
+                            <a href="update_order.php?order_id=<?php echo $row['order_id']; ?>" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Update
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
 
-    if ($result) {
-        echo "
-    <h3 class='text-center text-success mt-3 mb-3 mx-5 m-auto'>All Orders</h3>
-    <table class='table table-bordered mt-3 mb-3 mx-5 m-auto'>
-        <thead class='text-center'>
-            <tr>
-                <th>Sr. No.</th>
-                <th>User Id</th>
-                <th>Due Amount</th>
-                <th>Invoice No</th>  
-                <th>Total Products</th>
-                <th>Order date</th>
-                <th>Order Status</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody class='text-center'>";
-
-        if ($result->num_rows > 0) {
-            $sr_no = 0;
-            while ($row = mysqli_fetch_assoc($result)) {
-                $order_id = $row['order_id'];
-                $user_id = $row['user_id'];
-                $due_amount = $row['due_amount'];
-                $invoice_no = $row['invoice_no'];
-                $total_products = $row['total_products'];
-                $order_date = $row['order_date'];
-                $order_status = $row['order_status'];
-                $sr_no++;
-                echo "
-            <tr class='text-center'>
-                <td>$sr_no</td>
-                <td>$user_id</td>
-                <td>$due_amount</td>
-                <td>$invoice_no</td>
-                <td>$total_products</td>
-                <td>$order_date</td>
-                <td>$order_status</td>
-                <td>
-                    <a href='admin_home.php?trash_all_orders=$order_id'>
-                        <i class='fa-solid fa-trash-can text-dark'></i>
-                    </a>
-                </td>
-            </tr>";
-            }
-            echo "
-        </tbody>
-    </table>";
-        } else {
-            echo "<h3 class='text-danger mt-3'>No orders yet</h3>";
-        }
-    }
-    ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+</html>

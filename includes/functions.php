@@ -1,3 +1,4 @@
+    <!-- USER FUNCTIONS -->
 <?php
 include_once('db.php'); // Avoid multiple inclusions
 
@@ -124,3 +125,5 @@ function get_user_id($conn, $username)
     }
     return null; // Return null if user not found
 }
+// USER FUNCTIONS
+

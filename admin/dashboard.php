@@ -1,236 +1,58 @@
 <?php
-include('../includes/db.php'); // Include database connection
+// Sample optimized and fixed code for "dashboard.php"
+
+session_start();
+include('../config/db.php'); // Ensure the correct database connection
+
+// Check if admin is logged in
+if (!isset($_SESSION['admin_logged_in'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
+// Fetching required counts
+$products_count = $conn->query("SELECT COUNT(*) FROM products")->fetchColumn();
+$users_count = $conn->query("SELECT COUNT(*) FROM user")->fetchColumn();
+$orders_count = $conn->query("SELECT COUNT(*) FROM user_order")->fetchColumn();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Souffle</title>
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEWIH"
-        crossorigin="anonymous">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJWFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-    <style>
-        @import url('http://fonts.googleapis.com/css?family=Spartan:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
-        body {
-            font-family: 'Spartan', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .dashboard-content {
-            text-align: center;
-            margin: auto;
-        }
-
-        .dashboard_content_main {
-            display: flex;
-            flex-direction: column;
-            /* Changed from row to column for better stacking */
-            align-items: center;
-            /* Center align items */
-            gap: 20px;
-            /* Added spacing between elements */
-        }
-
-        .col70 {
-            width: 80%;
-            /* Adjusted width for better responsiveness */
-            margin: 0 auto;
-            /* Centered the content */
-        }
-
-        .dashboard_slidebar .logo {
-            width: 50%;
-            height: 50%;
-            object-fit: contain;
-            margin-top: 5px;
-        }
-
-        #dashboardContainer {
-            display: flex;
-            flex-direction: row;
-        }
-
-        .image {
-            background-color: azure;
-            margin-top: 5px;
-        }
-
-        ul.dashboard_list li:hover {
-            background: black;
-            border-radius: 5px;
-        }
-
-        ul.dashboard_list li.list {
-            background: black;
-            border-radius: 5px;
-        }
-
-        dashboard_topnav a {
-            color: #848383;
-            font-size: 18px;
-        }
-
-        .subMenus {
-            display: none;
-        }
-
-        .angle {
-            float: right;
-            font-size: 10px;
-            margin-top: 7px;
-        }
-
-        .nav-item {
-            display: block;
-        }
-    </style>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-
 <body>
-
-    <div class="dashboard-content text-center m-auto">
-        <div class="dashboard_content_main">
-            <div class="col70 m-5 m-auto">
-                <figure class="highcharts-figure">
-                    <div id="container"></div>
-                    <p class="highcharts-description text-center m-1">
-                        Here is breackdown of Purchase Orders by Status
-                    </p>
-                </figure>
+    
+    <?php include('admin_navbar.php'); ?>
+    
+    <div class="container mt-4">
+        <h2 class="text-center">Admin Dashboard</h2>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white p-3">
+                    <h4><i class="fas fa-box"></i> Products</h4>
+                    <p><?php echo $products_count; ?></p>
+                </div>
             </div>
-
-            <div class="col70 m-5">
-                <figure class="highcharts-figure">
-                    <div id="container_bar"></div>
-                    <p class="highcharts-description text-center">
-                        Here is breackdown of Purchase Orders by Status
-                    </p>
-                </figure>
+            <div class="col-md-4">
+                <div class="card bg-success text-white p-3">
+                    <h4><i class="fas fa-users"></i> Users</h4>
+                    <p><?php echo $users_count; ?></p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white p-3">
+                    <h4><i class="fas fa-shopping-cart"></i> Orders</h4>
+                    <p><?php echo $orders_count; ?></p>
+                </div>
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // Pie Chart
-            var graphData = <?= json_encode($results) ?>;
-            Highcharts.chart('container', {
-                chart: {
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Purchase Orders By Status'
-                },
-                tooltip: {
-                    format: function() {
-                        var point = this.point,
-                            series = point.series;
-                        return '<b>' + point.name + '</b>: ' + point.y;
-                    }
-                },
-                plotOptions: {
-                    series: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: [{
-                            enabled: true,
-                            distance: 20
-                        }, {
-                            enabled: true,
-                            distance: -40,
-                            format: '{point.y}',
-                            style: {
-                                fontSize: '1.2em',
-                                textOutline: 'none',
-                                opacity: 0.7
-                            }
-                        }],
-                        filter: {
-                            operator: '>',
-                            property: 'percentage',
-                            value: 10
-                        }
-                    }
-                },
-                series: [{
-                    name: 'Status',
-                    colorByPoint: true,
-                    data: graphData
-                }]
-            });
-
-            // Bar Chart
-            var barGraphData = <?= json_encode($bar_chart_data) ?>;
-            var barGraphCategory = <?= json_encode($categories) ?>;
-
-            Highcharts.chart('container_bar', {
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    text: 'Products Assigned To Supplier'
-                },
-                xAxis: {
-                    categories: barGraphCategory,
-                    crosshair: true,
-                    accessibility: {
-                        description: 'Suppliers'
-                    }
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: 'Number of Products' // Corrected typo
-                    }
-                },
-                tooltip: {
-                    format: function() {
-                        var point = this.point,
-                            series = point.series;
-                        return '<b>' + point.category + '</b>: ' + point.y;
-                    }
-                },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
-                    }
-                },
-                series: [{
-                    name: 'Suppliers',
-                    data: barGraphData
-                }]
-            });
-        });
-    </script>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
