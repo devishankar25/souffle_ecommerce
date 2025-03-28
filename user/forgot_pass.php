@@ -1,92 +1,70 @@
 <?php
+session_start();
+include './config.php'; // Fix the database connection path
 
-if (isset($_POST['verify'])) {
-    $email = $_POST['email'];
-    $contact = $_POST['contact'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = trim($_POST['email']);
 
-    $sql = "SELECT * FROM user WHERE email = ? AND contact = ?";
+    // Check if the email exists
+    $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $email, $contact);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
 
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        $_SESSION['reset_email'] = $email;
-        header("Location: reset_pass.php");
-        exit();
+    if ($user) {
+        // Generate a token and expiry time (valid for 30 minutes)
+        $token = bin2hex(random_bytes(50));
+        $expiry = date("Y-m-d H:i:s", strtotime('+30 minutes'));
+
+        // Store the token in the database
+        $sql = "UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $token, $expiry, $email);
+        $stmt->execute();
+
+        // Generate the reset link
+        $reset_link = "http://localhost/souffle_ecommerce/user/reset_pass.php?token=$token";
+
+        // Display the link (for testing)
+        echo "<div class='alert alert-success'>Password reset link: <a href='$reset_link'>$reset_link</a></div>";
+
+        // TODO: Send email (use PHPMailer in production)
     } else {
-        echo '<div class="alert alert-danger mt-3" role="alert">Email and contact do not belong to the same user.</div>';
+        echo "<div class='alert alert-danger'>Email not found.</div>";
     }
 }
-
 ?>
-
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Forgot Password</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password - Soufflé Bakery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f0f8ff;
-            /* Light blue background */
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 500px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-body {
-            background-color: #ffffff;
-            /* White card background */
-            border-radius: 10px;
-        }
-
-        h5 {
-            color: #007bff;
-            /* Cool blue heading */
-        }
-
-        .btn-success {
-            background-color: #28a745;
-            /* Green button */
-            border: none;
-        }
-
-        .btn-success:hover {
-            background-color: #218838;
-            /* Darker green on hover */
-        }
-
-        .form-control {
-            border-radius: 5px;
-        }
+        body { background: #f8f9fa; }
+        .forgot-container { max-width: 400px; margin: 100px auto; }
     </style>
 </head>
-
 <body>
-    <form action="forgot_pass.php" method="POST">
-        <div class="container mt-5">
-            <div class="card">
-                <div class="card-body shadow">
-                    <h5 class="text-center">Account Recovery</h5>
-                    <hr>
-                    <input type="text" name="email" placeholder="Enter recovery email" class="form-control mb-4" required>
-                    <input type="tel" name="contact" placeholder="Enter your contact" class="form-control mb-4" required>
-                    <button type="submit" name="verify" class="btn btn-success w-100">Verify</button>
+    <div class="container">
+        <div class="forgot-container bg-white p-4 shadow rounded">
+            <h3 class="text-center">Forgot Password</h3>
+            <form method="POST" action="">
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control" required>
                 </div>
-            </div>
+                <button type="submit" class="btn btn-primary w-100">Send Reset Link</button>
+                <div class="mt-3 text-center">
+                    <a href="login.php">Back to Login</a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

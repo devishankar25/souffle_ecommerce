@@ -1,45 +1,49 @@
 <?php
-// Start the session
 session_start();
+if (!isset($_SESSION['admin_logged_in'])) {
+    header('Location: admin_login.php');
+    exit();
+}
 
-// Include database connection
-include '../includes/db.php';
+include './config.php'; // Database connection
 
-// Fetch all users from the database
-$query = "SELECT user_id, username, email, contact FROM user";
-$result = mysqli_query($conn, $query);
+// Fetch users
+$sql = "SELECT * FROM users ORDER BY created_at DESC";
+$result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User List</title>
+    <title>User List - Soufflé Bakery</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-4">User List</h2>
-        <table class="table table-bordered table-striped">
+    <div class="container mt-5">
+        <h2 class="text-center">User List</h2>
+        <table class="table table-bordered table-striped mt-4">
             <thead class="table-dark">
                 <tr>
                     <th>User ID</th>
-                    <th>Username</th>
+                    <th>Name</th>
                     <th>Email</th>
-                    <th>Contact</th>
+                    <th>Created At</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                <?php while ($row = $result->fetch_assoc()) { ?>
                     <tr>
-                        <td><?php echo $row['user_id']; ?></td>
-                        <td><?php echo $row['username']; ?></td>
+                        <td><?php echo $row['id']; ?></td>
+                        <td><?php echo $row['name']; ?></td>
                         <td><?php echo $row['email']; ?></td>
-                        <td><?php echo $row['contact']; ?></td>
+                        <td><?php echo $row['created_at']; ?></td>
                         <td>
-                            <a href="#" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                            <a href="delete_user.php?user_id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
                         </td>
                     </tr>
                 <?php } ?>

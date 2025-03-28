@@ -1,84 +1,58 @@
 <?php
-include('../includes/db.php');
-include('../includes/functions.php');
+session_start();
+include './config.php'; // Database connection
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $message = $_POST['message'];
+    
+    // Insert contact message into database
+    $sql = "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $name, $email, $message);
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "Your message has been sent successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to send message. Please try again.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Souffle Bakery</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Contact Us - Soufflé Bakery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-    <!-- Navbar -->
-    <?php include('../includes/navbar.php'); ?>
-
-    <!-- Contact Section -->
-    <div class="container my-5">
-        <footer class="row g-4">
-            <div class="col-md-3 text-center">
-                <a href="../index.php">
-                </a>
-                <h4><strong>Contact</strong></h4>
-                <p>Address: Shop No. 4, Modi Bhavan, Gamdevi, Grant Road (W)</p>
-                <p>Phone: 7410702111</p>
-                <p>Open: 10am - 12pm</p>
-                <div class="follow mt-3">
-                    <h5><strong>Follow Us</strong></h5>
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="#" class="text-dark"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-dark"><i class="fab fa-instagram"></i></a>                    </div>
-                </div>
+    <div class="container mt-5">
+        <h2 class="text-center">Contact Us</h2>
+        <?php if (isset($_SESSION['message'])) { ?>
+            <div class="alert alert-success"> <?php echo $_SESSION['message']; unset($_SESSION['message']); ?> </div>
+        <?php } ?>
+        <?php if (isset($_SESSION['error'])) { ?>
+            <div class="alert alert-danger"> <?php echo $_SESSION['error']; unset($_SESSION['error']); ?> </div>
+        <?php } ?>
+        <form method="post" class="mt-4">
+            <div class="mb-3">
+                <label for="name" class="form-label">Your Name</label>
+                <input type="text" class="form-control" name="name" required>
             </div>
-            <div class="col-md-3 text-center">
-                <h4><strong>About</strong></h4>
-                <ul class="list-unstyled mt-3">
-                    <li><a href="#" class="text-dark">About Us</a></li>
-                    <li><a href="#" class="text-dark">Delivery Information</a></li>
-                    <li><a href="#" class="text-dark">Terms & Conditions</a></li>
-                    <li><a href="#" class="text-dark">Contact Us</a></li>
-                </ul>
+            <div class="mb-3">
+                <label for="email" class="form-label">Your Email</label>
+                <input type="email" class="form-control" name="email" required>
             </div>
-            <div class="col-md-3 text-center">
-                <h4><strong>My Account</strong></h4>
-                <ul class="list-unstyled mt-3">
-                    <li><a href="signup.php" class="text-dark">Sign In</a></li>
-                    <li><a href="cart.php" class="text-dark">View Cart</a></li>
-                </ul>
+            <div class="mb-3">
+                <label for="message" class="form-label">Your Message</label>
+                <textarea class="form-control" name="message" rows="4" required></textarea>
             </div>
-            <div class="col-md-3 text-center">
-                <h4><strong>Install App</strong></h4>
-                <p class="mt-3">From App Store or Google Play</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <img src="../images/app.png" alt="App Store" class="img-fluid" style="max-height: 40px;">
-                    <img src="../images/play.png" alt="Google Play" class="img-fluid" style="max-height: 40px;">
-                </div>
-                <h6 class="mt-4"><strong>Payment</strong></h6>
-                <div class="d-flex justify-content-center gap-3 mt-2">
-                    <img src="../images/card1.png" alt="Card 1" class="img-fluid" style="max-height: 30px;">
-                    <img src="../images/card2.png" alt="Card 2" class="img-fluid" style="max-height: 30px;">
-                    <img src="../images/scan.png" alt="Scan" class="img-fluid" style="max-height: 30px;">
-                </div>
-            </div>
-        </footer>
+            <button type="submit" class="btn btn-primary w-100">Send Message</button>
+        </form>
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

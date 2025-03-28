@@ -1,201 +1,95 @@
 <?php
+session_start();
+include './config.php'; // Database connection
 
-include('../includes/db.php');
-include('../includes/functions.php');
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // Start session only if not already active
-}
-include_once('../includes/db.php'); // Include the database connection
-
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
-
-if (!$username) {
-    die('Error: User is not logged in.');
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
 }
 
-if (isset($_POST['update_profile'])) {
+$user_id = $_SESSION['user_id'];
 
-    // Update first name, last name, gender, age, height, weight
+// Fetch user details
+$sql = "SELECT full_name, email, phone, address, profile_image FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
-    $update_fname = isset($_POST['update_fname']) ?
-        mysqli_real_escape_string($conn, $_POST['update_fname']) : "";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $full_name = $_POST['full_name'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $address = $_POST['address'];
+    $profile_image = $user['profile_image']; // Keep existing if not updated
+    
+    // Handle profile image upload
+    if (!empty($_FILES['profile_image']['name'])) {
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES['profile_image']['name']);
+        if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $target_file)) {
+            $profile_image = basename($_FILES['profile_image']['name']);
+        }
+    }
 
-    $update_lname = isset($_POST['update_lname']) ?
-        mysqli_real_escape_string($conn, $_POST['update_lname']) : "";
-
-    $update_gender = isset($_POST['update_gender']) ?
-        mysqli_real_escape_string($conn, $_POST['update_gender']) : "";
-
-    $update_age = isset($_POST['update_age']) ?
-        mysqli_real_escape_string($conn, $_POST['update_age']) : "";
-
-    $update_height = isset($_POST['update_height']) ?
-        mysqli_real_escape_string($conn, $_POST['update_height']) : "";
-
-    $update_weight = isset($_POST['update_weight']) ?
-        mysqli_real_escape_string($conn, $_POST['update_weight']) : "";
-
-    $update_query = "UPDATE `user` SET fname = '$update_fname', lname = '$update_lname', gender = '$update_gender', age = '$update_age', height = '$update_height', weight = '$update_weight' WHERE username = '$username'";
-
-    $result_update = mysqli_query($conn, $update_query);
-
-    if (!$result_update) {
-        die('Query failed: ' . mysqli_error($conn));
+    // Update user details
+    $update_sql = "UPDATE users SET full_name = ?, email = ?, phone = ?, address = ?, profile_image = ? WHERE id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param("sssssi", $full_name, $email, $phone, $address, $profile_image, $user_id);
+    if ($update_stmt->execute()) {
+        $_SESSION['message'] = "Profile updated successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to update profile. Please try again.";
     }
 }
-
 ?>
 
-<style>
-    .centered-container {
-        margin: 20px auto;
-        max-width: 800px;
-    }
-
-    .update-profile {
-        width: 100%;
-        padding: 30px;
-        background-color: #f9f9f9;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .update-profile form {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 20px 30px;
-    }
-
-    .update-profile label {
-        font-weight: bold;
-        align-self: center;
-    }
-
-    .update-profile input,
-    .update-profile datalist {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        width: 100%;
-    }
-
-    .form-actions {
-        grid-column: span 2;
-        display: flex;
-        justify-content: flex-start;
-        gap: 10px;
-        /* Space between buttons */
-        margin-top: 20px;
-    }
-
-    .form-actions input[type="submit"],
-    .form-actions a {
-        padding: 8px 15px;
-        /* Smaller padding for smaller buttons */
-        border: 1px solid seagreen;
-        border-radius: 5px;
-        font-size: 14px;
-        /* Smaller font size */
-        text-align: center;
-        cursor: pointer;
-    }
-
-    .form-actions input[type="submit"] {
-        background-color: seagreen;
-        color: white;
-        border: none;
-    }
-
-    .form-actions input[type="submit"]:hover {
-        background-color: rgb(20, 67, 41);
-    }
-
-    .form-actions a {
-        text-decoration: none;
-        color: seagreen;
-        background-color: white;
-    }
-
-    .form-actions a:hover {
-        background-color: seagreen;
-        color: white;
-    }
-</style>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Soufflé Bakery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 <body>
-    <div class="centered-container">
-        <h4 class="text-center text-success mt-3 spaced-element">
-            <strong>Update Profile</strong>
-        </h4>
-
-        <div class="update-profile spaced-element">
-
-            <?php
-
-            $select = mysqli_query($conn, "SELECT * FROM `user` WHERE username = '$username'")
-                or die('Query failed');
-
-            if (mysqli_num_rows($select) > 0) {
-                $fetch = mysqli_fetch_assoc($select);
-            }
-
-            ?>
-
-            <form action="profile.php?edit_profile" method="post"
-                enctype="multipart/form-data">
-                <label for="update_fname">First Name:</label>
-                <input type="text" id="update_fname" name="update_fname"
-                    value="<?php echo isset($fetch['fname']) ? $fetch['fname'] : ""; ?>">
-
-                <label for="update_lname">Last Name:</label>
-                <input type="text" id="update_lname" name="update_lname"
-                    value="<?php echo isset($fetch['lname']) ? $fetch['lname'] : ""; ?>">
-
-                <label for="update_gender">Gender:</label>
-                <input type="text" id="update_gender" name="update_gender"
-                    value="<?php echo isset($fetch['gender']) ? $fetch['gender'] : ""; ?>" list="genders">
-                <datalist id="genders">
-                    <option value="Male">
-                    <option value="Female">
-                    <option value="Others">
-                </datalist>
-
-                <label for="update_age">Age:</label>
-                <input type="number" id="update_age" name="update_age"
-                    value="<?php echo isset($fetch['age']) ? $fetch['age'] : ""; ?>" min="18">
-
-                <label for="update_height">Height (in cms):</label>
-                <input type="number" id="update_height" name="update_height"
-                    value="<?php echo isset($fetch['height']) ? $fetch['height'] : ""; ?>" min="0">
-
-                <label for="update_weight">Weight (in kgs):</label>
-                <input type="number" id="update_weight" name="update_weight"
-                    value="<?php echo isset($fetch['weight']) ? $fetch['weight'] : ""; ?>" min="0">
-
-                <div class="form-actions">
-                    <input type="submit" value="Update Profile" name="update_profile">
-                    <a href="profile.php">Go Back</a>
-                </div>
-
-                <?php
-                if (isset($_POST['update_profile'])) {
-                    echo "<script>alert('Profile updated successfully!')</script>";
-                    echo "<script>window.open('profile.php?delivery_details','_self')</script>";
-                }
-                ?>
-
-            </form>
-        </div>
+    <div class="container mt-5">
+        <h2 class="text-center">Edit Profile</h2>
+        <?php if (isset($_SESSION['message'])) { ?>
+            <div class="alert alert-success"> <?php echo $_SESSION['message']; unset($_SESSION['message']); ?> </div>
+        <?php } ?>
+        <?php if (isset($_SESSION['error'])) { ?>
+            <div class="alert alert-danger"> <?php echo $_SESSION['error']; unset($_SESSION['error']); ?> </div>
+        <?php } ?>
+        <form method="post" enctype="multipart/form-data" class="mt-4">
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <textarea class="form-control" name="address"><?php echo htmlspecialchars($user['address']); ?></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="profile_image" class="form-label">Profile Image</label>
+                <input type="file" class="form-control" name="profile_image">
+                <?php if (!empty($user['profile_image'])) { ?>
+                    <img src="uploads/<?php echo $user['profile_image']; ?>" width="100" class="mt-2">
+                <?php } ?>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+        </form>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

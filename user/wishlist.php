@@ -1,110 +1,98 @@
 <?php
-include('../includes/db.php');
-include('../includes/functions.php');
+session_start();
+include 'config.php'; // Database connection
 
-// Ensure session is started only once
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Redirect if user is not logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: user.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit();
 }
 
-$username = $_SESSION['username'];
+$user_id = $_SESSION['user_id'];
 
-// Add product to wishlist
-if (isset($_GET['prod_id'])) {
-    $pro_id = $_GET['prod_id'];
-    $user_id = get_user_id($conn, $username);
-
-    if ($user_id && add_to_wishlist($conn, $user_id, $pro_id)) {
-        echo "<script>alert('Product added to wishlist');</script>";
-    } else {
-        echo "<script>alert('Product already in wishlist');</script>";
+// Handle Add to Wishlist Request
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['product_id'])) {
+    $product_id = $_POST['product_id'];
+    
+    // Check if the product already exists in the wishlist
+    $check_sql = "SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?";
+    $stmt = $conn->prepare($check_sql);
+    $stmt->bind_param("ii", $user_id, $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if (!$result->fetch_assoc()) {
+        // If product does not exist, insert new entry
+        $insert_sql = "INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)";
+        $stmt = $conn->prepare($insert_sql);
+        $stmt->bind_param("ii", $user_id, $product_id);
+        $stmt->execute();
     }
-}
-
-// Delete product from wishlist
-if (isset($_GET['delete_id'])) {
-    $delete_id = $_GET['delete_id'];
-    $user_id = get_user_id($conn, $username);
-
-    $delete_query = $conn->prepare("DELETE FROM wishlist WHERE pro_id = ? AND user_id = ?");
-    $delete_query->bind_param("ii", $delete_id, $user_id);
-    $delete_query->execute();
+    
     header("Location: wishlist.php");
     exit();
 }
 
 // Fetch wishlist items
-$query = $conn->prepare("SELECT w.pro_id AS product_id, p.pro_name, p.pro_price, p.pro_image 
-                         FROM wishlist w 
-                         JOIN products p ON w.pro_id = p.pro_id 
-                         WHERE w.user_id = (SELECT user_id FROM user WHERE username = ?)");
-$query->bind_param("s", $username);
-$query->execute();
-$result = $query->get_result();
-?>
+$sql = "SELECT w.id, p.name, p.price FROM wishlist w JOIN products p ON w.product_id = p.id WHERE w.user_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css"> <!-- Link to the external CSS file -->
+    <title>Our Products - Soufflé Bakery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .product-card { border: 1px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; }
+    </style>
 </head>
-
 <body>
-    <!-- Navigation Bar -->
-    <?php include('../includes/navbar.php'); ?>
-
-    <div class="container py-4">
-        <h4 class="text-center text-primary mb-4">My Wishlist</h4>
-        <?php if ($result->num_rows > 0): ?>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Product Name</th>
-                        <th>Price</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr>
-                            <td><img src="<?= $row['pro_image'] ?>" alt="<?= htmlspecialchars($row['pro_name']) ?>" style="width: 100px;"></td>
-                            <td><?= $row['pro_name'] ?></td>
-                            <td>Rs. <?= $row['pro_price'] ?>/-</td>
-                            <td>
-                                <a href="wishlist.php?delete_id=<?= $row['product_id'] ?>" class="btn btn-danger btn-sm">Delete</a>
-                                <a href="product_details.php?prod_id=<?= $row['product_id'] ?>" class="btn btn-primary btn-sm">View</a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-            <div class="d-flex justify-content-between">
-                <a href="products.php" class="btn btn-secondary">Continue Shopping</a>
-                <a href="checkout.php" class="btn btn-success">Checkout</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="main_page.php">Soufflé Bakery</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="cart.php"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="wishlist.php"><i class="fas fa-heart"></i> Wishlist</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
             </div>
-        <?php else: ?>
-            <h4 class="text-center text-danger">Your wishlist is empty.</h4>
-        <?php endif; ?>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <h2 class="text-center">Our Products</h2>
+        <div class="row">
+            <?php while ($row = $result->fetch_assoc()) { ?>
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="uploads/<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+                        <h4><?php echo htmlspecialchars($row['name']); ?></h4>
+                        <p><?php echo substr(htmlspecialchars($row['description']), 0, 50) . '...'; ?></p>
+                        <h5>$<?php echo number_format($row['price'], 2); ?></h5>
+                        <a href="product_details.php?id=<?php echo $row['id']; ?>" class="btn btn-info">Read More</a>
+                        <form action="cart.php" method="POST" class="mt-2">
+                            <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                        </form>
+                        <form action="wishlist.php" method="POST" class="mt-2">
+                            <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+                            <button type="submit" class="btn btn-danger"><i class="fas fa-heart"></i> Add to Wishlist</button>
+                        </form>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
     </div>
-
-    <footer>
-        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

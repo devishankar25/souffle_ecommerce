@@ -1,74 +1,63 @@
 <?php
 session_start();
-include('../includes/db.php');
-include('../includes/functions.php');
+include './config.php'; // Database connection
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+// Fetch user details
+$sql = "SELECT full_name, email, phone, address, profile_image FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+if (!$user) {
+    echo "<div class='alert alert-danger'>User not found.</div>";
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - Souffle Bakery</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css"> <!-- Link to the external CSS file -->
-
+    <title>My Profile - Soufflé Bakery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-
 <body>
-    <!-- Header -->
-    <?php include('../includes/navbar.php'); ?>
-
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3">
-                <div class="profile-sidebar">
-                    <h4>My Profile</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="profile.php?pending"><i class="fas fa-clock"></i> Pending Orders</a></li>
-                        <li><a href="profile.php?edit_profile"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
-                        <li><a href="profile.php?my_orders"><i class="fas fa-box"></i> My Orders</a></li>
-                        <li><a href="profile.php?delete_account"><i class="fas fa-user-times"></i> Delete Account</a></li>
-                        <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Content Area -->
-            <div class="col-md-9">
-                <div class="profile-content">
-                    <?php
-                    if (isset($_GET['pending'])) {
-                        include('pending.php');
-                    } elseif (isset($_GET['edit_profile'])) {
-                        include('edit_profile.php');
-                    } elseif (isset($_GET['my_orders'])) {
-                        include('my_orders.php');
-                    } elseif (isset($_GET['delete_account'])) {
-                        include('delete_account.php');
-                    } else {
-                        echo "<h3>Welcome to your profile!</h3>";
-                        echo "<p>Use the menu on the left to navigate through your profile options.</p>";
-                    }
-                    ?>
-                </div>
+    <div class="container mt-5">
+        <h2 class="text-center">My Profile</h2>
+        <div class="card mx-auto" style="max-width: 500px;">
+            <div class="card-body text-center">
+                <img src="uploads/<?php echo htmlspecialchars($user['profile_image'] ?: 'default.png'); ?>" class="rounded-circle" width="100" height="100" alt="Profile Picture">
+                <h4 class="mt-3"><?php echo htmlspecialchars($user['full_name']); ?></h4>
+                <p>Email: <?php echo htmlspecialchars($user['email']); ?></p>
+                <p>Phone: <?php echo htmlspecialchars($user['phone'] ?: 'N/A'); ?></p>
+                <p>Address: <?php echo nl2br(htmlspecialchars($user['address'] ?: 'N/A')); ?></p>
+                <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
+                <a href="main_page.php" class="btn btn-secondary">Back to Main Page</a>
+                <hr>
+                <a href="wishlist.php" class="btn btn-info">My Wishlist</a>
+                <a href="viewfeedback.php" class="btn btn-warning">View Feedback</a>
+                <a href="add_feedback.php" class="btn btn-success">Add Feedback</a>
+                <a href="confirm_payment.php" class="btn btn-dark">Confirm Payment</a>
+                <a href="delete_account.php" class="btn btn-danger">Delete Account</a>
+                <hr>
+                <a href="product.php" class="btn btn-outline-primary">View Products</a>
+                <a href="cart.php" class="btn btn-outline-secondary">View Cart</a>
+                <a href="checkout.php" class="btn btn-outline-success">Proceed to Checkout</a>
+                <a href="my_orders.php" class="btn btn-outline-info">My Orders</a>
+                <a href="pending.php" class="btn btn-outline-warning">Pending Orders</a>
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 Souffle Bakery. All rights reserved.</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

@@ -1,94 +1,101 @@
 <?php
 session_start();
+include './config.php'; // Database connection
 
-include('../includes/db.php');
-include('../includes/functions.php');
-
-$get_ip = getClientIP();
-$total = 0;
-
-$query = $conn->prepare("SELECT c.cart_id, c.pro_id, c.quantity, p.pro_name, p.pro_price, p.pro_image 
-                         FROM cart c 
-                         JOIN products p ON c.pro_id = p.pro_id 
-                         WHERE c.ip_address = ?");
-$query->bind_param("s", $get_ip);
-$query->execute();
-$result = $query->get_result();
-
-// Handle update and delete operations
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['update_cart'])) {
-        $cart_id = $_POST['cart_id'];
-        $quantity = $_POST['quantity'];
-        $update_query = $conn->prepare("UPDATE cart SET quantity = ? WHERE cart_id = ?");
-        $update_query->bind_param("ii", $quantity, $cart_id);
-        $update_query->execute();
-        header("Location: cart.php");
-    } elseif (isset($_POST['delete_cart'])) {
-        $cart_id = $_POST['cart_id'];
-        $delete_query = $conn->prepare("DELETE FROM cart WHERE cart_id = ?");
-        $delete_query->bind_param("i", $cart_id);
-        $delete_query->execute();
-        header("Location: cart.php");
-    }
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
 }
+
+$user_id = $_SESSION['user_id'];
+
+// Handle Add to Cart Request
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['product_id'])) {
+    $product_id = $_POST['product_id'];
+    
+    // Check if the product already exists in the cart
+    $check_sql = "SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?";
+    $stmt = $conn->prepare($check_sql);
+    $stmt->bind_param("ii", $user_id, $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($row = $result->fetch_assoc()) {
+        // If product exists, update the quantity
+        $new_quantity = $row['quantity'] + 1;
+        $update_sql = "UPDATE cart SET quantity = ? WHERE id = ?";
+        $stmt = $conn->prepare($update_sql);
+        $stmt->bind_param("ii", $new_quantity, $row['id']);
+        $stmt->execute();
+    } else {
+        // If product does not exist, insert new entry
+        $insert_sql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, 1)";
+        $stmt = $conn->prepare($insert_sql);
+        $stmt->bind_param("ii", $user_id, $product_id);
+        $stmt->execute();
+    }
+    
+    header("Location: cart.php");
+    exit();
+}
+
+// Fetch cart items for display
+$sql = "SELECT c.id, p.name, p.price, c.quantity FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
 ?>
-
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>My Cart</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css"> <!-- Link to the external CSS file -->
-
+    <meta charset="aUTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Soufflé Bakery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-    <?php include('../includes/navbar.php'); ?>
-
-    <div class="container mt-4">
-        <h4 class="text-center">My Cart</h4>
-        <div class="row">
-            <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $total += $row['pro_price'] * $row['quantity'];
-                    echo "<div class='col-md-4 mb-4'>
-                            <div class='card shadow-sm'>
-                                <img src='" . $row['pro_image'] . "' class='card-img-top' alt='" . htmlspecialchars($row['pro_name']) . "'>
-                                <div class='card-body'>
-                                    <h5 class='card-title'>" . $row['pro_name'] . "</h5>
-                                    <p class='card-text'>Price: Rs. " . $row['pro_price'] . "/-</p>
-                                    <form method='POST'>
-                                        <input type='hidden' name='cart_id' value='" . $row['cart_id'] . "'>
-                                        <div class='mb-2'>
-                                            <label for='quantity' class='form-label'>Quantity:</label>
-                                            <input type='number' name='quantity' value='" . $row['quantity'] . "' min='1' class='form-control'>
-                                        </div>
-                                        <button type='submit' name='update_cart' class='btn btn-primary btn-sm'>Update</button>
-                                        <button type='submit' name='delete_cart' class='btn btn-danger btn-sm'>Delete</button>
-                                    </form>
-                                </div>
-                            </div>
-                          </div>";
-                }
-                echo "<h5 class='text-end'>Total: Rs. $total /-</h5>";
-                echo "<div class='text-end mt-3'>
-                        <a href='product.php' class='btn btn-secondary'>Continue Shopping</a>
-                        <a href='checkout.php' class='btn btn-success'>Checkout</a>";
-            } else {
-                echo "<h4 class='text-center text-danger'>Your cart is empty.</h4>";
-            }
-            ?>
+    <div class="container mt-5">
+        <h2 class="text-center">Your Cart</h2>
+        <table class="table table-bordered table-striped mt-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $total_price = 0;
+                while ($row = $result->fetch_assoc()) { 
+                    $subtotal = $row['price'] * $row['quantity'];
+                    $total_price += $subtotal;
+                ?>
+                    <tr>
+                        <td><?php echo $row['name']; ?></td>
+                        <td>$<?php echo number_format($row['price'], 2); ?></td>
+                        <td><?php echo $row['quantity']; ?></td>
+                        <td>$<?php echo number_format($subtotal, 2); ?></td>
+                        <td>
+                            <a href="remove_from_cart.php?cart_id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Remove item from cart?')">
+                                <i class="fas fa-trash"></i> Remove
+                            </a>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+        <h4 class="text-end">Total: $<?php echo number_format($total_price, 2); ?></h4>
+        <div class="text-end mt-3">
+            <a href="checkout.php" class="btn btn-success">Proceed to Checkout</a>
+            <a href="product.php" class="btn btn-secondary">Continue Shopping</a>
         </div>
     </div>
-
-    <footer class="footer mt-4">
-        <p>&copy; 2025 Souffle Bakery. All rights reserved. <a href="contact.php">Contact Us</a></p>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

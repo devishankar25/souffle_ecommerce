@@ -1,49 +1,66 @@
 <?php
-
-include('../includes/db.php');
-include('../includes/functions.php');
 session_start();
+include 'config.php'; // Database connection
 
-$username = $_SESSION['username'];
-
-$query = "SELECT user_id, fname, lname FROM `user` WHERE username = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-
-if (!$user) {
-    die("Error: User not found.");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
 }
 
-$user_id = $user['user_id'];
-$fullName = $user['fname'] . ' ' . $user['lname'];
+$user_id = $_SESSION['user_id'];
+$success_message = "";
+$error_message = "";
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $rating = intval($_POST['rating'] ?? 0);
-    $feedback = trim($_POST['feedback'] ?? '');
-    $image = $_FILES['image']['name'] ?? '';
+// Handle feedback submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $feedback_text = trim($_POST['feedback_text']);
 
-    if (!$rating || !$feedback || !$image) {
-        die("All fields are required.");
-    }
+    if (!empty($feedback_text)) {
+        $sql = "INSERT INTO feedback (user_id, feedback_text, created_at) VALUES (?, ?, NOW())";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("is", $user_id, $feedback_text);
 
-    $target_file = "uploads/" . basename($image);
-    if (!move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-        die("Failed to upload image.");
-    }
-
-    $sql = "INSERT INTO feedbacks (user_id, name, rating, image, feedback) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isiss", $user_id, $fullName, $rating, $image, $feedback);
-
-    if ($stmt->execute()) {
-        echo "New record created successfully";
+        if ($stmt->execute()) {
+            $success_message = "Thank you for your feedback!";
+        } else {
+            $error_message = "Error submitting feedback. Please try again.";
+        }
     } else {
-        die("Error: " . $stmt->error);
+        $error_message = "Feedback cannot be empty.";
     }
-
-    $stmt->close();
-    $conn->close();
 }
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Feedback - Soufflé Bakery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Add Feedback</h2>
+
+        <?php if ($success_message) { ?>
+            <div class="alert alert-success text-center"><?php echo $success_message; ?></div>
+        <?php } elseif ($error_message) { ?>
+            <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
+        <?php } ?>
+
+        <form method="POST" action="add_feedback.php" class="mx-auto mt-4" style="max-width: 500px;">
+            <div class="mb-3">
+                <label for="feedback_text" class="form-label">Your Feedback</label>
+                <textarea name="feedback_text" id="feedback_text" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit Feedback</button>
+            <a href="viewfeedback.php" class="btn btn-warning">View Feedback</a>
+            <a href="main_page.php" class="btn btn-secondary">Back to Main Page</a>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,36 +1,50 @@
 <?php
-// Start session
 session_start();
-include '../includes/db.php'; // Database connection
-
-// Validate order_id is passed and is a number
-if (!isset($_GET['order_id']) || !is_numeric($_GET['order_id'])) {
-    die("Order ID is required.");
+if (!isset($_SESSION['admin_logged_in'])) {
+    header('Location: admin_login.php');
+    exit();
 }
 
-$order_id = intval($_GET['order_id']); // Convert to integer for safety
+include '../config.php'; // Database connection
+
+// Validate order_id
+// Debugging: Check if order_id is received correctly
+if (!isset($_GET['order_id']) || empty($_GET['order_id'])) {
+    die("Invalid request. Order ID missing.");
+}
+
+$order_id = $_GET['order_id'];
+
+// Debugging: Print order_id to confirm
+echo "Received Order ID: " . htmlspecialchars($order_id) . "<br>";
 
 // Fetch order details
-$order_query = "SELECT * FROM user_order WHERE order_id = $order_id";
-$order_result = mysqli_query($conn, $order_query);
+$sql = "SELECT * FROM orders WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $order_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$order = $result->fetch_assoc();
 
-// Check if order exists
-if (!$order_result || mysqli_num_rows($order_result) == 0) {
-    die("Order not found.");
+// Debugging: Check if query returns data
+if (!$order) {
+    die("Order not found. Check if order ID exists in the database.");
 }
 
-$order = mysqli_fetch_assoc($order_result);
 
-// Handle form submission
+// Handle form submission to update order status
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $new_status = mysqli_real_escape_string($conn, $_POST['order_status']);
-    $update_query = "UPDATE user_order SET Order_status = '$new_status' WHERE order_id = $order_id";
-
-    if (mysqli_query($conn, $update_query)) {
-        echo "<script>alert('Order updated successfully!'); window.location.href='order_list.php';</script>";
-        exit;
+    $new_status = $_POST['status'];
+    
+    $update_sql = "UPDATE orders SET status = ? WHERE id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param("si", $new_status, $order_id);
+    
+    if ($update_stmt->execute()) {
+        header("Location: orders_list.php?success=Order updated successfully");
+        exit();
     } else {
-        die("Error updating order: " . mysqli_error($conn));
+        echo "Error updating order.";
     }
 }
 ?>
@@ -40,47 +54,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Order</title>
+    <title>Update Order - Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Update Order Status</h2>
-        <form method="POST">
+        <h2 class="text-center">Update Order</h2>
+        <form method="post" class="mt-4">
             <div class="mb-3">
                 <label class="form-label">Order ID:</label>
-                <input type="text" class="form-control" value="<?php echo htmlspecialchars($order['order_id']); ?>" disabled>
+                <input type="text" class="form-control" value="<?php echo $order['id']; ?>" disabled>
             </div>
             <div class="mb-3">
                 <label class="form-label">User ID:</label>
-                <input type="text" class="form-control" value="<?php echo htmlspecialchars($order['user_id']); ?>" disabled>
+                <input type="text" class="form-control" value="<?php echo $order['user_id']; ?>" disabled>
             </div>
             <div class="mb-3">
-                <label class="form-label">Due Amount:</label>
-                <input type="text" class="form-control" value="<?php echo htmlspecialchars($order['Due_amount']); ?>" disabled>
+                <label class="form-label">Total Price:</label>
+                <input type="text" class="form-control" value="$<?php echo $order['total_price']; ?>" disabled>
             </div>
             <div class="mb-3">
-                <label class="form-label">Invoice No:</label>
-                <input type="text" class="form-control" value="<?php echo htmlspecialchars($order['Invoice_no']); ?>" disabled>
+                <label class="form-label">Order Date:</label>
+                <input type="text" class="form-control" value="<?php echo $order['created_at']; ?>" disabled>
             </div>
             <div class="mb-3">
-                <label class="form-label">Total Products:</label>
-                <input type="text" class="form-control" value="<?php echo htmlspecialchars($order['Total_products']); ?>" disabled>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Order Status:</label>
-                <select class="form-control" name="order_status">
-                    <option value="Pending" <?php if ($order['Order_status'] == 'Pending') echo 'selected'; ?>>Pending</option>
-                    <option value="Processing" <?php if ($order['Order_status'] == 'Processing') echo 'selected'; ?>>Processing</option>
-                    <option value="Shipped" <?php if ($order['Order_status'] == 'Shipped') echo 'selected'; ?>>Shipped</option>
-                    <option value="Delivered" <?php if ($order['Order_status'] == 'Delivered') echo 'selected'; ?>>Delivered</option>
+                <label class="form-label">Status:</label>
+                <select name="status" class="form-control">
+                    <option value="Pending" <?php if ($order['status'] == 'Pending') echo 'selected'; ?>>Pending</option>
+                    <option value="Shipped" <?php if ($order['status'] == 'Shipped') echo 'selected'; ?>>Shipped</option>
+                    <option value="Delivered" <?php if ($order['status'] == 'Delivered') echo 'selected'; ?>>Delivered</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Update Order</button>
-            <a href="order_list.php" class="btn btn-secondary">Cancel</a>
+            <a href="orders_list.php" class="btn btn-secondary">Back</a>
         </form>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
