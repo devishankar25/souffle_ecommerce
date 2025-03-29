@@ -25,6 +25,8 @@ $result = $conn->query($sql);
             <a class="navbar-brand" href="main_page.php">Soufflé Bakery</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="wishlist.php"><i class="fas fa-heart"></i> Wishlist</a></li>
                     <li class="nav-item"><a class="nav-link" href="cart.php"><i class="fas fa-shopping-cart"></i> Cart</a></li>
                     <li class="nav-item"><a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 </ul>

@@ -53,7 +53,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         <a href="edit_products.php"><i class="fas fa-edit"></i> Edit Product</a>
         <a href="delete_product.php"><i class="fas fa-trash"></i> Delete Product</a>
         <a href="orders_list.php"><i class="fas fa-shopping-cart"></i> Orders</a>
-        <a href="update_order.php"><i class="fas fa-sync"></i> Update Orders</a>
         <a href="user_list.php"><i class="fas fa-users"></i> Users</a>
         <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
