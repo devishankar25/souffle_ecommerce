@@ -1,25 +1,19 @@
 <?php
 session_start();
 include 'config.php'; // Database connection
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
 $success_message = "";
 $error_message = "";
-
-// Handle feedback submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $feedback_text = trim($_POST['feedback_text']);
-
     if (!empty($feedback_text)) {
         $sql = "INSERT INTO feedback (user_id, feedback_text, created_at) VALUES (?, ?, NOW())";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("is", $user_id, $feedback_text);
-
         if ($stmt->execute()) {
             $success_message = "Thank you for your feedback!";
         } else {
@@ -30,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="main_page.php" class="btn btn-secondary">Back to Main Page</a>
         </form>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

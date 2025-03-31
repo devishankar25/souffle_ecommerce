@@ -3,11 +3,7 @@ session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: admin_login.php');
     exit();
-}
-
-include '../config.php'; // Database connection
-
-// Fetch products
+}include '../config.php'; // Database connection
 $sql = "SELECT * FROM products ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>

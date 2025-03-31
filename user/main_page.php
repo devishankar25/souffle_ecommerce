@@ -20,11 +20,10 @@ include 'config.php'; // Database connection
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="product.php">Products</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="product.php"><i class="fas fa-box-open"></i> Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.php"><i class="fas fa-address-book"></i> Contact</a></li>
                     <?php if (isset($_SESSION['user_id'])) { ?>
                         <li class="nav-item"><a class="nav-link" href="cart.php"><i class="fas fa-shopping-cart"></i> Cart</a></li>
-
                         <li class="nav-item"><a class="nav-link" href="checkout.php"><i class="fas fa-credit-card"></i> Checkout</a></li>
                         <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -35,8 +34,7 @@ include 'config.php'; // Database connection
                 </ul>
             </div>
         </div>
-    </nav>
-    
+    </nav> 
     <div class="container mt-5 text-center">
         <h1>Welcome to Soufflé Bakery</h1>
         <p>Delicious pastries and desserts made with love.</p>

@@ -1,28 +1,21 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $order_id = $_POST['order_id'];
     $payment_proof = $_FILES['payment_proof']['name'];
     $target_dir = "uploads/";
     $target_file = $target_dir . basename($payment_proof);
-
-    // Upload payment proof
     if (move_uploaded_file($_FILES['payment_proof']['tmp_name'], $target_file)) {
-        // Update order status
         $update_sql = "UPDATE orders SET payment_status = 'Confirmed', payment_proof = ? WHERE id = ? AND user_id = ?";
         $update_stmt = $conn->prepare($update_sql);
         $update_stmt->bind_param("sii", $payment_proof, $order_id, $user_id);
         $update_stmt->execute();
-
         $_SESSION['message'] = "Payment confirmed successfully!";
         header("Location: my_orders.php");
         exit();
@@ -30,8 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Failed to upload payment proof. Please try again.";
     }
 }
-
-// Fetch user orders
 $sql = "SELECT id, total_price, status FROM orders WHERE user_id = ? ORDER BY id DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
@@ -39,7 +30,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $orders = $result->fetch_all(MYSQLI_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

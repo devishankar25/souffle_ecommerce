@@ -1,14 +1,11 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $message = $_POST['message'];
-    
-    // Insert contact message into database
-    $sql = "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $name, $email, $message);
     if ($stmt->execute()) {
@@ -17,9 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Failed to send message. Please try again.";
     }
 }
-?>
-
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">

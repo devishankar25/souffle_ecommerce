@@ -1,15 +1,11 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
-
-// Fetch cart items
 $sql = "SELECT cart.id, products.name, products.price, cart.quantity FROM cart 
         JOIN products ON cart.product_id = products.id 
         WHERE cart.user_id = ?";
@@ -18,34 +14,26 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $cart_items = $result->fetch_all(MYSQLI_ASSOC);
-
 $total_price = array_reduce($cart_items, function ($sum, $item) {
     return $sum + ($item['price'] * $item['quantity']);
 }, 0);
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $address = $_POST['address'];
     $payment_method = $_POST['payment_method'];
-    
-    // Insert order
-    $insert_sql = "INSERT INTO orders (user_id, total_price, name, address, payment_method, status) VALUES (?, ?, ?, ?, ?, 'Pending')";
+        $insert_sql = "INSERT INTO orders (user_id, total_price, name, address, payment_method, status) VALUES (?, ?, ?, ?, ?, 'Pending')";
     $insert_stmt = $conn->prepare($insert_sql);
     $insert_stmt->bind_param("idsss", $user_id, $total_price, $name, $address, $payment_method);
     $insert_stmt->execute();
-    
-    // Clear cart after order
-    $clear_cart_sql = "DELETE FROM cart WHERE user_id = ?";
+        $clear_cart_sql = "DELETE FROM cart WHERE user_id = ?";
     $clear_cart_stmt = $conn->prepare($clear_cart_sql);
     $clear_cart_stmt->bind_param("i", $user_id);
     $clear_cart_stmt->execute();
-    
     $_SESSION['message'] = "Order placed successfully!";
     header("Location: my_orders.php");
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

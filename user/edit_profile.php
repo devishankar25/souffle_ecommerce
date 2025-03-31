@@ -1,39 +1,30 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
-
-// Fetch user details
 $sql = "SELECT full_name, email, phone, address, profile_image FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $full_name = $_POST['full_name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
     $address = $_POST['address'];
-    $profile_image = $user['profile_image']; // Keep existing if not updated
-    
-    // Handle profile image upload
-    if (!empty($_FILES['profile_image']['name'])) {
+    $profile_image = $user['profile_image'];
+        if (!empty($_FILES['profile_image']['name'])) {
         $target_dir = "uploads/";
         $target_file = $target_dir . basename($_FILES['profile_image']['name']);
         if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $target_file)) {
             $profile_image = basename($_FILES['profile_image']['name']);
         }
     }
-
-    // Update user details
     $update_sql = "UPDATE users SET full_name = ?, email = ?, phone = ?, address = ?, profile_image = ? WHERE id = ?";
     $update_stmt = $conn->prepare($update_sql);
     $update_stmt->bind_param("sssssi", $full_name, $email, $phone, $address, $profile_image, $user_id);
@@ -44,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,19 +1,15 @@
 <?php
 session_start();
 include '../config.php'; // Database connection
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    // Check if email already exists
     $check_sql = "SELECT id FROM users WHERE email = ?";
     $stmt = $conn->prepare($check_sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
-    
     if ($stmt->num_rows > 0) {
         $error = "Email is already registered.";
     } else {

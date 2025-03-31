@@ -1,13 +1,10 @@
 <?php 
 session_start();
-
-// Check if admin session is set and valid
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header('Location: admin_login.php');
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +53,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         <a href="user_list.php"><i class="fas fa-users"></i> Users</a>
         <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
-    
     <div class="main-content">
         <h2>Welcome, Admin</h2>
         <p>Manage your bakery efficiently from the dashboard.</p>

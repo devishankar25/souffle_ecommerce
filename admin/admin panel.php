@@ -1,8 +1,6 @@
 <?php
 session_start();
 include '../config.php'; // Database connection file
-
-// Check if admin is logged in
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: admin_login.php');
     exit();

@@ -1,13 +1,10 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
-// Redirect logged-in users
 if (isset($_SESSION['user_id'])) {
-    header('Location: main_page.php'); // Corrected path
+    header('Location: main_page.php'); 
     exit();
 }
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
@@ -17,17 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
-
-    if ($user && password_verify($password, $user['password'])) {
+    $user = $result->fetch_assoc();    if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['name'];
-        $_SESSION['user_role'] = $user['role']; // Assuming 'role' column exists in users table
+        $_SESSION['user_role'] = $user['role']; 
     
         if ($user['role'] == 'admin') {
-            header('Location: ../admin/dashboard.php'); // Redirect admins
+            header('Location: ../admin/dashboard.php'); 
         } else {
-            header('Location: main_page.php'); // Redirect normal users
+            header('Location: main_page.php'); 
         }
         exit();
     }
@@ -36,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

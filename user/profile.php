@@ -1,28 +1,22 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
-
-// Fetch user details
 $sql = "SELECT full_name, email, phone, address, profile_image FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
-
 if (!$user) {
     echo "<div class='alert alert-danger'>User not found.</div>";
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

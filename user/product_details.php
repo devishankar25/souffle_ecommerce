@@ -1,23 +1,17 @@
 <?php
 session_start();
 include 'config.php'; // Database connection
-
-// Check if product ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header('Location: product.php'); // Redirect if no product ID
     exit();
 }
-
 $product_id = intval($_GET['id']);
-
-// Fetch product details
 $sql = "SELECT * FROM products WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $product_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $product = $result->fetch_assoc();
-
 if (!$product) {
     echo "<div class='alert alert-danger text-center'>Product not found.</div>";
     exit();

@@ -1,15 +1,11 @@
 <?php 
 session_start();
 include 'config.php'; // Ensure database connection
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
-
-// Fetch user feedback securely
 $sql = "SELECT f.id, f.feedback_text, f.created_at, u.full_name FROM feedback f 
         JOIN users u ON f.user_id = u.id 
         ORDER BY f.created_at DESC";
@@ -17,7 +13,6 @@ $stmt = $conn->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +25,6 @@ $result = $stmt->get_result();
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Customer Feedback</h2>
-
         <?php if ($result->num_rows > 0) { ?>
             <div class="row">
                 <?php while ($row = $result->fetch_assoc()) { ?>
@@ -52,7 +46,6 @@ $result = $stmt->get_result();
             <a href="add_feedback.php" class="btn btn-primary"><i class="fas fa-plus"></i> Add Feedback</a>
         </div>
     </div>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

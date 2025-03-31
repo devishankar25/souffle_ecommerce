@@ -1,12 +1,10 @@
 <?php
 session_start();
 include '../config.php';
-
 if (isset($_SESSION['admin_logged_in'])) {
     header('Location: dashboard.php'); // Prevent looping
     exit();
 }
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -29,9 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

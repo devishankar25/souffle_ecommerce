@@ -4,9 +4,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: admin_login.php');
     exit();
 }
-
 include '../config.php'; // Database connection
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $price = $_POST['price'];
@@ -14,9 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $category = $_POST['category'];
     $image = $_FILES['image']['name'];
     $target = "uploads/" . basename($image);
-    
-    // Insert product into database
-    $sql = "INSERT INTO products (name, price, description, category, image) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO products (name, price, description, category, image) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sdsss", $name, $price, $description, $category, $image);
     

@@ -1,34 +1,24 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
-// Check if token is provided in the URL
 if (!isset($_GET['token']) || empty($_GET['token'])) {
     die("Invalid request.");
 }
-
 $token = $_GET['token'];
-
-// Check if token exists in the database
 $sql = "SELECT id FROM users WHERE reset_token = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $token);
 $stmt->execute();
 $result = $stmt->get_result();
-
 if ($result->num_rows == 0) {
     die("Invalid or expired token.");
 }
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $new_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    // Update password in database
     $update_sql = "UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?";
     $update_stmt = $conn->prepare($update_sql);
     $update_stmt->bind_param("ss", $new_password, $token);
     $update_stmt->execute();
-
     if ($update_stmt->affected_rows > 0) {
         echo "<div class='alert alert-success'>Password reset successful! <a href='login.php'>Login</a></div>";
     } else {

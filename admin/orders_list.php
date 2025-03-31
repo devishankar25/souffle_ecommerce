@@ -4,10 +4,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: admin_login.php');
     exit();
 }
-
 include '../config.php'; // Database connection
-
-// Fetch orders
 $sql = "SELECT * FROM orders ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>
@@ -20,8 +17,6 @@ $result = $conn->query($sql);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-
-
     <div class="container mt-5">
         <h2 class="text-center">Orders List</h2>
         <table class="table table-bordered table-striped mt-4">

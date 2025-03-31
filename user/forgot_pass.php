@@ -1,36 +1,23 @@
 <?php
 session_start();
-include './config.php'; // Fix the database connection path
-
+include './config.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
-
-    // Check if the email exists
     $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
-
     if ($user) {
-        // Generate a token and expiry time (valid for 30 minutes)
         $token = bin2hex(random_bytes(50));
         $expiry = date("Y-m-d H:i:s", strtotime('+30 minutes'));
-
-        // Store the token in the database
         $sql = "UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sss", $token, $expiry, $email);
         $stmt->execute();
-
-        // Generate the reset link
         $reset_link = "http://localhost/souffle_ecommerce/user/reset_pass.php?token=$token";
-
-        // Display the link (for testing)
         echo "<div class='alert alert-success'>Password reset link: <a href='$reset_link'>$reset_link</a></div>";
-
-        // TODO: Send email (use PHPMailer in production)
     } else {
         echo "<div class='alert alert-danger'>Email not found.</div>";
     }

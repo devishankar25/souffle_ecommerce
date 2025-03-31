@@ -1,51 +1,39 @@
 <?php
 session_start();
 include './config.php'; // Database connection
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
-
-// Handle Add to Cart Request
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['product_id'])) {
     $product_id = $_POST['product_id'];
-    
-    // Check if the product already exists in the cart
-    $check_sql = "SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?";
+        $check_sql = "SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?";
     $stmt = $conn->prepare($check_sql);
     $stmt->bind_param("ii", $user_id, $product_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
     if ($row = $result->fetch_assoc()) {
-        // If product exists, update the quantity
         $new_quantity = $row['quantity'] + 1;
         $update_sql = "UPDATE cart SET quantity = ? WHERE id = ?";
         $stmt = $conn->prepare($update_sql);
         $stmt->bind_param("ii", $new_quantity, $row['id']);
         $stmt->execute();
     } else {
-        // If product does not exist, insert new entry
         $insert_sql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, 1)";
         $stmt = $conn->prepare($insert_sql);
         $stmt->bind_param("ii", $user_id, $product_id);
         $stmt->execute();
     }
-    
+
     header("Location: cart.php");
     exit();
 }
-
-// Fetch cart items for display
 $sql = "SELECT c.id, p.name, p.price, c.quantity FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

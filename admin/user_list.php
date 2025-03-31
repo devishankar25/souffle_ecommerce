@@ -4,10 +4,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: admin_login.php');
     exit();
 }
-
 include './config.php'; // Database connection
-
-// Fetch users
 $sql = "SELECT * FROM users ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>

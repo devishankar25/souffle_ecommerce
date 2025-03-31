@@ -1,12 +1,10 @@
 <?php
 session_start();
 include 'config.php'; // Database connection
-
-// Fetch products from the database
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
 ?>
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -25,15 +23,16 @@ $result = $conn->query($sql);
             <a class="navbar-brand" href="main_page.php">Soufflé Bakery</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="contact.php"><i class="fas fa-address-book"></i> Contact</a></li>
+                <li class="nav-item"><a class="nav-link" href="cart.php"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="checkout.php"><i class="fas fa-credit-card"></i> Checkout</a></li>   
                 <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="wishlist.php"><i class="fas fa-heart"></i> Wishlist</a></li>
-                    <li class="nav-item"><a class="nav-link" href="cart.php"><i class="fas fa-shopping-cart"></i> Cart</a></li>
                     <li class="nav-item"><a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    
     <div class="container mt-4">
         <h2 class="text-center">Our Products</h2>
         <div class="row">
@@ -54,7 +53,6 @@ $result = $conn->query($sql);
             <?php } ?>
         </div>
     </div>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
